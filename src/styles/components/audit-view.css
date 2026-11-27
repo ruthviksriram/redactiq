@@ -1,0 +1,184 @@
+/* --------------------------------------------------------------------------
+   Audit View (Side-by-Side Panels)
+   -------------------------------------------------------------------------- */
+.audit-view-section {
+  width: 100%;
+}
+
+.audit-split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.audit-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 440px;
+}
+
+.panel-header {
+  padding: 0.85rem 1.25rem;
+  background-color: var(--bg-card-subtle);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.panel-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.panel-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.original-dot {
+  background-color: var(--warning-amber);
+  box-shadow: 0 0 8px var(--warning-amber);
+}
+
+.sanitized-dot {
+  background-color: var(--success-green);
+  box-shadow: 0 0 8px var(--success-green);
+}
+
+.panel-title {
+  font-size: 0.925rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-heading);
+}
+
+.panel-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+}
+
+.original-badge {
+  background-color: var(--warning-bg);
+  color: var(--warning-amber);
+  border: 1px solid var(--warning-border);
+}
+
+.sanitized-badge {
+  background-color: var(--success-bg);
+  color: var(--success-green);
+  border: 1px solid var(--success-border);
+}
+
+.panel-body {
+  flex: 1;
+  padding: 1.25rem;
+  background-color: var(--bg-input);
+  overflow-y: auto;
+  max-height: 540px;
+}
+
+.highlighted-content-scroll {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-size: 0.84rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-primary);
+}
+
+.plain-text-stream {
+  color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Entity Highlights (Contrast >= 7:1)
+   -------------------------------------------------------------------------- */
+.entity-highlight {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.12rem 0.45rem;
+  margin: 0 0.1rem;
+  border-radius: 6px;
+  background-color: var(--hl-bg);
+  color: var(--hl-text);
+  font-weight: 650;
+  text-decoration: none;
+  vertical-align: baseline;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+button.entity-highlight {
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.entity-highlight.is-redacted {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+}
+
+.entity-text {
+  font-family: inherit;
+  color: inherit;
+}
+
+.entity-type-tag {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.22);
+  color: inherit;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  vertical-align: middle;
+}
+
+.entity-type-tag.is-unverified {
+  background-color: rgba(245, 158, 11, 0.25);
+  border: 1px dashed rgba(245, 158, 11, 0.6);
+  color: inherit;
+}
+
+/* Empty Panel State */
+.empty-panel-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  min-height: 320px;
+  gap: 0.6rem;
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  color: var(--border-color);
+  margin-bottom: 0.5rem;
+}
+
+.empty-panel-state p {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.empty-panel-state span {
+  font-size: 0.85rem;
+  max-width: 320px;
+  line-height: 1.5;
+}

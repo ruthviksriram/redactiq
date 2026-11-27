@@ -348,3 +348,29 @@ Run `npm run lint`, `npm test` and `npm run build`, update PROMPT_LOG.md, commit
 ```
 
 _Note: Configured unique id and name attributes along with matching htmlFor associations on all inputs, selects, textareas, and checkboxes; added public/robots.txt and public/favicon.svg, updated index.html with theme-color and favicon links while preserving strict connect-src 'none' CSP; added Lighthouse scores (Perf 100, A11y 100, BP 100, SEO 91) to README with CSP privacy explanation; created GitHub Actions CI workflow in .github/workflows/ci.yml._
+
+## Prompt 14
+
+```
+Fix the code-quality issues from your review, in three parts. RULES for every part: no behaviour, UI or visual changes; do not touch the CSP, vercel.json, nginx.conf or security headers; do not delete or weaken any test; keep all existing import paths working. Do NOT add or commit anything in .github/workflows (leave ci.yml untracked). After each part run `npm run lint`, `npm test` and `npm run build`; if anything fails and you can't fix it quickly, revert that part. Commit each part separately and push to origin main.
+
+PART A (safe fixes)
+- #5: Update every JSDoc @param, @returns and @typedef to match the real signatures (verhoeffFailedCount, strictChecksum, auditReportData, etc.)
+- #6: risk.js uses RISK_LEVEL_THRESHOLDS from constants.js instead of hardcoded 80/50/20
+- #7: Extract a single validatePattern(pattern, isRegex) helper in CustomRulesSection.jsx
+- #4: Install prop-types, add propTypes (and defaultProps where needed) to every component, and turn the 'react/prop-types' ESLint rule back on with zero warnings
+- #9: Add .editorconfig and .prettierrc.json, add "format" and "format:check" scripts, run Prettier on the whole project
+
+PART B (structure)
+- #1: Move state, debouncing and the memoized pipelines from App.jsx into a custom hook src/hooks/useRedactionEngine.js; App.jsx should mainly compose components (target under 120 lines)
+- #2: Move FileReader and drag-and-drop logic from InputSection.jsx into src/hooks/useFileUpload.js, and move the drag overlay and SVG icons into small presentational components (target each file under 200 lines)
+- #3: Split detectors.js into src/lib/detectors/rules.js (regexes and normalizers) and src/lib/detectors/overlaps.js (resolveOverlaps). Keep src/lib/detectors.js as the public entry point that re-exports everything, so all existing imports and tests keep working unchanged
+- Add unit tests for useRedactionEngine and useFileUpload (renderHook from @testing-library/react)
+
+PART C (styles)
+- #8: Split src/index.css into partials under src/styles/ (tokens.css, base.css, layout.css, components/*.css, animations.css, cursor.css) WITHOUT changing any rule, and import them from index.css in exactly the original order so the cascade stays identical. Then open the app in the browser in both themes and confirm it looks exactly the same as before.
+
+Finally, update the README project-structure section and PROMPT_LOG.md, and show me the final lint, test and build results and the push output.
+```
+
+_Note: Completed Code Quality Hardening across 3 parts: Part A added propTypes to all components, re-enabled react/prop-types in ESLint with 0 warnings, synchronized all JSDoc annotations, refactored risk.js to use RISK_LEVEL_THRESHOLDS, eliminated regex validation duplication, and added .editorconfig, .prettierrc.json, and format scripts; Part B extracted useRedactionEngine.js reducing App.jsx to 113 lines, extracted useFileUpload.js and subcomponents reducing InputSection.jsx to 176 lines, split detectors.js into rules.js and overlaps.js while keeping public API re-exports intact, and added 8 unit tests for hooks (84 total tests passing); Part C split index.css into 18 modular partials under src/styles/ preserving exact cascade order, verified identical rendering in both Light and Dark themes via headless Chrome capture, updated README with complete architecture tree, and kept .github/workflows untracked._

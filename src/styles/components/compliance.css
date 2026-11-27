@@ -1,0 +1,55 @@
+/* --------------------------------------------------------------------------
+   Compliance Framework Badges
+   -------------------------------------------------------------------------- */
+.compliance-tags-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border-color);
+  margin-top: 0.5rem;
+}
+
+.compliance-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.compliance-badges-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.compliance-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--comp-color, var(--border-color));
+  font-size: 0.75rem;
+  color: var(--text-primary);
+}
+
+.comp-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--comp-color);
+}
+
+.comp-name {
+  font-weight: 700;
+  color: var(--comp-color);
+}
+
+.comp-desc {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}

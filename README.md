@@ -5,7 +5,7 @@
 
 [![Vercel Deployment](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](vercel.json)
 [![Cloud Run Ready](https://img.shields.io/badge/Deploy-Google%20Cloud%20Run-blue?logo=googlecloud)](Dockerfile)
-[![Tests Passing](https://img.shields.io/badge/Tests-76%20Passed-brightgreen)](src/lib/__tests__)
+[![Tests Passing](https://img.shields.io/badge/Tests-84%20Passed-brightgreen)](src/lib/__tests__)
 [![Coverage](https://img.shields.io/badge/Coverage-98.56%25-brightgreen)](src/lib)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 
@@ -138,7 +138,79 @@ RedactIQ is built on the principle that the most secure data transfer is **no da
 
 ---
 
-## 8. Getting Started
+## 8. Project Structure
+
+```text
+redactiq/
+├── .editorconfig                # Multi-editor indentation and line-ending configuration
+├── .prettierrc.json             # Code formatting rules
+├── .prettierignore              # Formatting exclude definitions
+├── Dockerfile                   # Multi-stage production container build (Cloud Run)
+├── nginx.conf                   # Hardened reverse-proxy serving SPA with strict security headers
+├── vercel.json                  # Production Vercel routing and zero-trust CSP headers
+├── index.html                   # HTML root with theme-color, favicon, and dynamic CSP injection
+├── src/
+│   ├── main.jsx                 # React root bootstrap wrapped in ErrorBoundary
+│   ├── App.jsx                  # Clean application composer (<120 lines)
+│   ├── index.css                # Scoped imports ordering the CSS cascade (18 lines)
+│   ├── components/              # Modular UI presentational components (<200 lines each)
+│   │   ├── Header.jsx           # Brand header, tagline, and theme toggle
+│   │   ├── InputSection.jsx     # Text input, dropzone, and action toolbar
+│   │   ├── InputAlerts.jsx      # Live region error and warning alerts
+│   │   ├── InputStatsBar.jsx    # Real-time character/word count and privacy notice
+│   │   ├── FileBadge.jsx        # Active file indicator with 1-click removal
+│   │   ├── DragOverlay.jsx      # Drag-and-drop backdrop overlay
+│   │   ├── ControlsBar.jsx      # Mode switcher, custom per-type rules, and strict validation
+│   │   ├── SummaryBar.jsx       # Detected counts, risk meter, and compliance tags
+│   │   ├── RiskMeter.jsx        # Sensitivity gauge and automated risk guidance
+│   │   ├── HighlightedText.jsx  # Interactive element highlights with zero dangerouslySetInnerHTML
+│   │   ├── OverridePopover.jsx  # Accessible per-item redaction override popover
+│   │   ├── AuditView.jsx        # Synchronized side-by-side original vs sanitized comparison
+│   │   ├── ExportBar.jsx        # Sanitized file download, clipboard copy, and audit JSON export
+│   │   ├── MappingTable.jsx     # Ephemeral in-memory reverse lookup table
+│   │   ├── CustomRulesSection.jsx # Keyword and regex custom pattern definitions
+│   │   ├── CustomCursor.jsx     # Hardware-accelerated fluid trailing cursor
+│   │   └── ErrorBoundary.jsx    # Zero-telemetry error boundary fallback
+│   ├── hooks/                   # Custom business logic and I/O hooks
+│   │   ├── useRedactionEngine.js # Full reactive state machine, debounce, and memoized pipeline
+│   │   ├── useFileUpload.js     # FileReader async processing, size check, and drag-and-drop
+│   │   └── __tests__/           # Unit tests for custom hooks (renderHook)
+│   ├── lib/                     # Pure functional algorithmic core (100% client-side)
+│   │   ├── constants.js         # Centralized weights, thresholds, modes, and metadata
+│   │   ├── validators.js        # Luhn, Verhoeff, IPv4/v6, and PAN mathematical validators
+│   │   ├── detectors.js         # Public detector entry point and backward-compatible re-exports
+│   │   ├── detectors/
+│   │   │   ├── rules.js         # Pure regex definitions and entity normalizers
+│   │   │   └── overlaps.js      # Greedy priority-weighted collision arbitration
+│   │   ├── redact.js            # Deterministic transformation and pseudonym generator
+│   │   ├── risk.js              # 0-100 privacy scoring, guidance wording, and audit generator
+│   │   ├── sampleData.js        # Realistic support ticket test payload
+│   │   └── useEffects3D.js      # 3D perspective tilt and mouse-following glare hooks
+│   └── styles/                  # Modular scoped CSS partials
+│       ├── tokens.css           # Design tokens, themes, and CSS custom properties
+│       ├── base.css             # CSS reset, typography, and focus ring definitions
+│       ├── cursor.css           # Custom cursor animations
+│       ├── layout.css           # App shell and layout grid
+│       ├── animations.css       # Keyframes and entrance stagger animations
+│       ├── responsive.css       # Media queries and mobile breakpoint rules
+│       └── components/          # Component-specific styles
+│           ├── header.css
+│           ├── buttons.css
+│           ├── cards.css
+│           ├── input-section.css
+│           ├── controls.css
+│           ├── summary-bar.css
+│           ├── audit-view.css
+│           ├── export-bar.css
+│           ├── mapping-table.css
+│           ├── risk-meter.css
+│           ├── compliance.css
+│           └── custom-rules.css
+```
+
+---
+
+## 9. Getting Started
 
 ### Prerequisites
 
@@ -179,9 +251,9 @@ npm run build
 
 ---
 
-## 9. Testing & Code Quality
+## 10. Testing & Code Quality
 
-RedactIQ is verified by 76 automated tests spanning unit regex/checksum logic, edge cases (empty strings, zero PII, Unicode text, 100k-character stress payloads, path traversal sanitization), and full component integration flows via React Testing Library.
+RedactIQ is verified by 84 automated tests spanning unit regex/checksum logic, edge cases (empty strings, zero PII, Unicode text, 100k-character stress payloads, path traversal sanitization), custom hook react states, and full component integration flows via React Testing Library.
 
 ### V8 Code Coverage (`src/lib`)
 
@@ -215,7 +287,7 @@ RedactIQ is verified by 76 automated tests spanning unit regex/checksum logic, e
 
 ---
 
-## 10. Deployment
+## 11. Deployment
 
 ### Option A: Vercel (Primary & Recommended)
 
@@ -247,7 +319,7 @@ gcloud run deploy redactiq \
 
 ---
 
-## 11. Known Limitations
+## 12. Known Limitations
 
 - **Personal Names (Named-Entity Recognition)**: Personal names (e.g. "John Smith", "Priya Sharma") are intentionally **not** detected. Accurate detection of arbitrary person names requires statistical Natural Language Processing (NLP) or machine learning models (such as BERT or LLMs). Bundling large ML models into the browser would degrade load times and memory efficiency, while calling external cloud NER APIs would violate RedactIQ's core zero-trust, client-side privacy guarantee.
 - **Unstructured Physical Addresses**: Non-standardized street addresses without postal codes are omitted for similar reasons. Structured entities (IPs, emails, phone numbers, tax IDs, and payment cards) are detected with mathematical precision.
@@ -255,6 +327,6 @@ gcloud run deploy redactiq \
 
 ---
 
-## 12. License
+## 13. License
 
 MIT License. Designed and built with privacy, precision, and performance.

@@ -1,0 +1,175 @@
+/* --------------------------------------------------------------------------
+   Input Section
+   -------------------------------------------------------------------------- */
+.input-section {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-heading);
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.file-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  color: var(--accent-cyan);
+  font-size: 0.775rem;
+  font-weight: 600;
+}
+
+.file-badge-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  display: flex;
+  align-items: center;
+  transition: color 150ms ease;
+}
+
+.file-badge-remove:hover {
+  color: var(--accent-cyan);
+}
+
+/* Textarea & Dropzone */
+.dropzone-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.text-input-area {
+  width: 100%;
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  resize: vertical;
+  min-height: 150px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 200ms ease;
+}
+
+.text-input-area:focus {
+  border-color: var(--border-focus);
+  box-shadow:
+    0 0 0 1px var(--border-focus),
+    inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.text-input-area::placeholder {
+  color: var(--text-muted);
+}
+
+.dropzone-wrapper.is-dragging .text-input-area {
+  border-color: var(--accent-cyan);
+  border-style: dashed;
+}
+
+.drag-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(7, 9, 14, 0.9);
+  border: 2px dashed var(--accent-cyan);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.drag-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent-cyan);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.input-stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.stats-privacy-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Alerts */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.alert-error {
+  background-color: var(--error-bg);
+  border: 1px solid var(--error-border);
+  color: var(--error-red);
+}
+
+.alert-warning {
+  background-color: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  color: var(--warning-amber);
+}

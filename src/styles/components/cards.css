@@ -1,0 +1,52 @@
+/* --------------------------------------------------------------------------
+   3D Tilt Cards with Specular Light Glare
+   -------------------------------------------------------------------------- */
+.tilt-card {
+  transform: perspective(1200px) rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg));
+  transform-style: preserve-3d;
+  transition:
+    transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 250ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tilt-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle 420px at var(--glare-x, 50%) var(--glare-y, 50%),
+    var(--specular-glare),
+    transparent 75%
+  );
+  opacity: var(--glare-opacity, 0);
+  transition: opacity 250ms ease;
+  z-index: 1;
+}
+
+.input-section,
+.controls-bar,
+.summary-bar,
+.audit-panel {
+  background-color: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: var(--card-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 200ms ease,
+    border-color 200ms ease;
+}
+
+.input-section:hover,
+.controls-bar:hover,
+.summary-bar:hover,
+.audit-panel:hover {
+  box-shadow: var(--shadow-card-hover);
+}

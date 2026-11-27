@@ -1,0 +1,85 @@
+/* --------------------------------------------------------------------------
+   Custom Cursor (Cosmic Style: Dot + Trailing Eased Ring)
+   -------------------------------------------------------------------------- */
+@media (hover: hover) and (pointer: fine) {
+  .custom-cursor-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 99999;
+  }
+
+  .cursor-dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 50%;
+    background-color: var(--accent-cyan);
+    box-shadow: 0 0 10px var(--accent-cyan);
+    pointer-events: none;
+    will-change: transform;
+    transition:
+      opacity 150ms ease,
+      transform 0.04s linear;
+  }
+
+  .cursor-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent-cyan);
+    background-color: transparent;
+    pointer-events: none;
+    will-change: transform;
+    transition:
+      width 220ms cubic-bezier(0.16, 1, 0.3, 1),
+      height 220ms cubic-bezier(0.16, 1, 0.3, 1),
+      margin 220ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 180ms ease,
+      background-color 180ms ease,
+      opacity 150ms ease;
+  }
+
+  /* Ring on Interactive Hover */
+  .custom-cursor-container.cursor-hovered .cursor-ring {
+    width: 48px;
+    height: 48px;
+    margin: -24px 0 0 -24px;
+    border-color: var(--accent-cyan);
+    background-color: var(--accent-subtle);
+  }
+
+  /* Ring on Click (Press) */
+  .custom-cursor-container.cursor-clicking .cursor-ring {
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    background-color: var(--accent-subtle);
+  }
+
+  /* Subtle Fade over Text Elements to Preserve OS I-Beam */
+  .custom-cursor-container.cursor-text-target .cursor-ring {
+    opacity: 0.15;
+    border-style: dashed;
+  }
+
+  .custom-cursor-container.cursor-text-target .cursor-dot {
+    opacity: 0.3;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .custom-cursor-container {
+    display: none !important;
+  }
+}

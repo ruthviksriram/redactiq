@@ -1,0 +1,86 @@
+/* --------------------------------------------------------------------------
+   Accessibility & Motion Preferences
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transform: none !important;
+  }
+
+  .custom-cursor-container {
+    display: none !important;
+  }
+
+  .tilt-card {
+    transform: none !important;
+  }
+
+  .tilt-card::before {
+    display: none !important;
+  }
+
+  .btn-3d:hover {
+    transform: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Layouts
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .audit-split-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-toggle-group {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .section-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toolbar-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .summary-main-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .export-bar-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1.15rem;
+  }
+
+  .export-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .export-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}

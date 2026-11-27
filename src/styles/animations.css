@@ -1,0 +1,29 @@
+/* --------------------------------------------------------------------------
+   Entrance Stagger Animations
+   -------------------------------------------------------------------------- */
+@keyframes sectionEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.input-section {
+  animation: sectionEntrance 450ms cubic-bezier(0.16, 1, 0.3, 1) 0ms backwards;
+}
+
+.controls-bar {
+  animation: sectionEntrance 450ms cubic-bezier(0.16, 1, 0.3, 1) 70ms backwards;
+}
+
+.summary-bar {
+  animation: sectionEntrance 450ms cubic-bezier(0.16, 1, 0.3, 1) 140ms backwards;
+}
+
+.audit-view-section {
+  animation: sectionEntrance 450ms cubic-bezier(0.16, 1, 0.3, 1) 210ms backwards;
+}

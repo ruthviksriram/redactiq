@@ -1,0 +1,166 @@
+/* ==========================================================================
+   RedactIQ Design System — Premium Modern Product UI (Vercel / Linear / Stripe)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Themes & CSS Custom Properties (Variables)
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme='dark'] {
+  --theme-name: dark;
+
+  /* Surfaces & Backgrounds: Deep navy #050B18, cards #0B1426 */
+  --bg-primary: #050b18;
+  --bg-secondary: rgba(11, 20, 38, 0.72);
+  --bg-card: #0b1426;
+  --bg-card-hover: #0f1c36;
+  --bg-card-subtle: #080f1d;
+  --bg-input: #040813;
+  --header-bg: rgba(5, 11, 24, 0.88);
+  --header-glow: radial-gradient(
+    ellipse 80% 50% at 50% -20%,
+    rgba(16, 185, 129, 0.18),
+    rgba(20, 184, 166, 0.1),
+    transparent 70%
+  );
+
+  /* Borders & Dividers: Faint teal border */
+  --border-color: rgba(20, 184, 166, 0.16);
+  --border-hover: rgba(20, 184, 166, 0.32);
+  --border-focus: #10b981;
+  --card-border: 1px solid rgba(20, 184, 166, 0.16);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.65), inset 0 1px 1px 0 rgba(20, 184, 166, 0.08);
+  --shadow-card-hover:
+    0 18px 40px -12px rgba(0, 0, 0, 0.8), inset 0 1px 1px 0 rgba(20, 184, 166, 0.15);
+  --shadow-btn-3d: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.18) inset;
+  --shadow-btn-3d-hover:
+    0 6px 18px -2px rgba(16, 185, 129, 0.38), 0 2px 6px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.28) inset;
+  --shadow-btn-3d-active: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+
+  /* Typography */
+  --text-primary: #f8fafc;
+  --text-heading: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* Accents & Brand: #10B981 -> #14B8A6 (emerald to teal) */
+  --accent-cyan: #10b981;
+  --accent-cyan-hover: #059669;
+  --accent-gradient: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #34d399 0%, #2dd4bf 100%);
+  --accent-subtle: rgba(16, 185, 129, 0.14);
+  --accent-border: rgba(20, 184, 166, 0.38);
+  --specular-glare: rgba(20, 184, 166, 0.08);
+
+  /* System State Colors: Emerald "100% Client-Side" badge */
+  --success-green: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.12);
+  --success-border: rgba(16, 185, 129, 0.35);
+  --warning-amber: #fbbf24;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --warning-border: rgba(245, 158, 11, 0.35);
+  --error-red: #f87171;
+  --error-bg: rgba(248, 113, 113, 0.12);
+  --error-border: rgba(248, 113, 113, 0.35);
+
+  /* Entity Highlights: Phone=Lime (#A3E635), IP=Orange (#FB923C) */
+  --hl-email-bg: #7dd3fc;
+  --hl-email-text: #082f49;
+  --hl-phone-bg: #a3e635;
+  --hl-phone-text: #1a2e05;
+  --hl-ip-bg: #fb923c;
+  --hl-ip-text: #431407;
+  --hl-pan-bg: #d8b4fe;
+  --hl-pan-text: #3b0764;
+  --hl-aadhaar-bg: #fde047;
+  --hl-aadhaar-text: #422006;
+  --hl-card-bg: #f9a8d4;
+  --hl-card-text: #500724;
+
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  --theme-name: light;
+
+  /* Surfaces & Backgrounds: #F5F9FC, white cards with faint navy border */
+  --bg-primary: #f5f9fc;
+  --bg-secondary: rgba(255, 255, 255, 0.88);
+  --bg-card: #ffffff;
+  --bg-card-hover: #ffffff;
+  --bg-card-subtle: #edf4fa;
+  --bg-input: #ffffff;
+  --header-bg: rgba(245, 249, 252, 0.88);
+  --header-glow: radial-gradient(
+    ellipse 80% 50% at 50% -20%,
+    rgba(4, 120, 87, 0.12),
+    rgba(15, 118, 110, 0.08),
+    transparent 70%
+  );
+
+  /* Borders & Dividers: Faint navy border */
+  --border-color: rgba(11, 27, 58, 0.1);
+  --border-hover: rgba(11, 27, 58, 0.22);
+  --border-focus: #047857;
+  --card-border: 1px solid rgba(11, 27, 58, 0.1);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(11, 27, 58, 0.05);
+  --shadow-card:
+    0 4px 20px -2px rgba(11, 27, 58, 0.06), 0 1px 3px 0 rgba(11, 27, 58, 0.04),
+    inset 0 1px 0 0 #ffffff;
+  --shadow-card-hover:
+    0 14px 32px -4px rgba(11, 27, 58, 0.12), 0 2px 6px 0 rgba(11, 27, 58, 0.05),
+    inset 0 1px 0 0 #ffffff;
+  --shadow-btn-3d: 0 2px 4px rgba(11, 27, 58, 0.12), 0 1px 0 rgba(255, 255, 255, 0.6) inset;
+  --shadow-btn-3d-hover:
+    0 6px 16px -2px rgba(4, 120, 87, 0.25), 0 2px 6px rgba(11, 27, 58, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  --shadow-btn-3d-active: inset 0 2px 4px rgba(11, 27, 58, 0.15);
+
+  /* Typography: Headings in navy #0B1B3A */
+  --text-primary: #0f172a;
+  --text-heading: #0b1b3a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  /* Accents & Brand: Deeper #047857 -> #0F766E so contrast >= 4.5:1 */
+  --accent-cyan: #047857;
+  --accent-cyan-hover: #065f46;
+  --accent-gradient: linear-gradient(135deg, #047857 0%, #0f766e 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #065f46 0%, #115e59 100%);
+  --accent-subtle: rgba(4, 120, 87, 0.1);
+  --accent-border: rgba(4, 120, 87, 0.35);
+  --specular-glare: rgba(4, 120, 87, 0.06);
+
+  /* System State Colors */
+  --success-green: #047857;
+  --success-bg: rgba(4, 120, 87, 0.1);
+  --success-border: rgba(4, 120, 87, 0.3);
+  --warning-amber: #b45309;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --warning-border: rgba(245, 158, 11, 0.35);
+  --error-red: #dc2626;
+  --error-bg: rgba(220, 38, 38, 0.1);
+  --error-border: rgba(220, 38, 38, 0.3);
+
+  /* Entity Highlights: Phone=Lime (#A3E635), IP=Orange (#FB923C) */
+  --hl-email-bg: #bae6fd;
+  --hl-email-text: #082f49;
+  --hl-phone-bg: #bef264;
+  --hl-phone-text: #1a2e05;
+  --hl-ip-bg: #fed7aa;
+  --hl-ip-text: #431407;
+  --hl-pan-bg: #e9d5ff;
+  --hl-pan-text: #3b0764;
+  --hl-aadhaar-bg: #fef08a;
+  --hl-aadhaar-text: #422006;
+  --hl-card-bg: #fbcfe8;
+  --hl-card-text: #500724;
+
+  color-scheme: light;
+}

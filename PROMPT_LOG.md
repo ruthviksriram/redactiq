@@ -221,6 +221,27 @@ The design is final. Start Phase 4. We deploy on Vercel (primary), with Cloud Ru
 ```
 *Note: Completed Phase 4 - implemented ExportBar.jsx, MappingTable.jsx with sensitive data warning, added unit test verifying sanitized exports contain no UI labels, added vercel.json with zero-trust headers, Dockerfile and nginx.conf for Cloud Run, comprehensive README.md, browser tested all features in both themes, verified 0 git tracking of node_modules/dist, and pushed to origin main.*
 
+## Prompt 10 (Part 1)
+```
+Add these features in two parts. Do not change how the existing 3 modes behave. After Part 1, run tests, commit and push; then do Part 2, run tests, commit and push.
+
+PART 1
+A) A 4th redaction mode: "Custom"
+- An accessible panel with one select per entity type (Email, Phone, IP Address, PAN, Aadhaar, Payment Card), options: Full Mask, Partial Mask, Pseudonym
+- Defaults: Email = Partial, Aadhaar = Partial, everything else = Full Mask
+
+B) Per-item overrides (work in every mode)
+- Clicking (or pressing Enter/Space on) a highlighted entity in the Original panel opens a small accessible popover: Use default, Full Mask, Partial Mask, Pseudonym, Don't redact
+- An override applies to that entity's normalized value, so every occurrence changes together
+- Items with an override show a small "edited" marker; add a "Reset all overrides" button
+- Popover closes on Escape and outside click, returns focus to the item, uses proper ARIA (aria-haspopup, menu/menuitemradio)
+- Counts show how many items are excluded by "Don't redact"
+- redact.js accepts { mode, typeModes, overrides }; priority: per-item override > Custom per-type mode > global mode. Reuse the existing mode functions, no duplicated logic; pseudonym numbering stays consistent. Mapping table shows only if something uses Pseudonym. Download and copy follow all overrides. Overrides are in memory only.
+- Unit tests: per-type mode map, a mixed case (email partial, card full, phone pseudonym), override beating type mode, 'none' leaving the original, same value overridden everywhere
+```
+*Note: Completed Part 1 - implemented 4th redaction mode "Custom" with per-entity selectors in ControlsBar, per-item override popover in AuditView with ARIA menu/menuitemradio, normalized entity grouping, "Reset all overrides" button, exclusion tracking in SummaryBar, memory-only overrides in redact.js with strict precedence, unit tests in redact.test.js, and browser verification in dual themes.*
+
+
 
 
 

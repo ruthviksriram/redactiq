@@ -27,10 +27,12 @@ Most commercial scrubbing tools rely on cloud backends or external AI APIs. Send
   - **Verhoeff Checksum**: Validates 12-digit Indian Aadhaar numbers using the dihedral $D_5$ group algorithm.
   - **Luhn Algorithm**: Modulo-10 checksum validation on 13–19 digit credit cards. Prevents false-positive flags on random numerical strings.
   - **Octet-Bounded IP Validation**: Strict $0–255$ boundary checks rejecting invalid IPs (e.g., `999.1.1.1`).
-- **Three Redaction Modes**:
+- **Four Flexible Redaction Modes**:
   1. **Full Mask**: High-security token substitution (`[REDACTED_EMAIL]`, `[REDACTED_CARD]`).
   2. **Partial Mask**: Retains diagnostic context while protecting identity (`j***@gmail.com`, `XXXXXX3210`, `XXXX-XXXX-XXXX-1234`).
   3. **Consistent Pseudonymization**: Maps identical normalized entities to deterministic placeholders (`EMAIL_01`, `PHONE_01`) across the document. Guaranteed comma-free to preserve CSV structure.
+  4. **Custom Mode**: Granular per-entity type strategy configuration (e.g. Email = Partial, Aadhaar = Partial, others = Full Mask).
+- **Interactive Per-Item Overrides**: Click or activate any detected entity span in the Original panel to open an accessible popover and override its redaction behavior (`Full Mask`, `Partial Mask`, `Pseudonym`, or `Don't redact`). Overrides apply to the entity's normalized value so all occurrences stay synchronized, with an `• edited` indicator and a 1-click `Reset all overrides` action.
 - **Side-by-Side Audit View**: Real-time comparison between original source text and sanitized output with color-coded entity tags. Implemented using React element tokens with **zero `dangerouslySetInnerHTML`** to prevent XSS.
 - **Ephemeral Pseudonymization Mapping Table**: Reverse-lookup table visible only in pseudonymization mode. Stored strictly in volatile RAM and automatically excluded from exports.
 - **Safe 1-Click Export**:
@@ -86,6 +88,8 @@ flowchart LR
    - PAN: `ABCDE1234F` $\rightarrow$ `XXXXX1234X`
    - IP: `192.168.1.100` $\rightarrow$ `192.168.XXX.XXX`
 3. **Consistent Pseudonymization**: Maps identical normalized entities to the exact same placeholder throughout the text (`EMAIL_01`, `EMAIL_02`, `PHONE_01`). Even if a phone number appears once as `+91 98765 43210` and later as `9876543210`, both resolve to `PHONE_01`. Replacements never contain commas, ensuring CSV integrity.
+4. **Custom Redaction Strategy**: Provides granular per-entity type strategy selection. Configure emails and Aadhaar IDs to use partial masking for operational context, while payment cards, phone numbers, IPs, and PAN numbers remain fully redacted.
+5. **Per-Item Overrides & Exclusions**: Directly click any highlighted entity in the Original panel to open an accessible popover and customize its masking (`Use default`, `Full Mask`, `Partial Mask`, `Pseudonym`, `Don't redact`). Overrides are mapped to normalized values, synchronizing across every document occurrence in memory. Items marked as "Don't redact" are excluded from transformation and reported in the summary counter.
 
 ---
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ENTITY_TYPES, ENTITY_METADATA, REDACTION_MODES } from '../lib/constants.js';
+import { ENTITY_TYPES, ENTITY_METADATA, REDACTION_MODES, DEFAULT_CUSTOM_TYPE_MODES } from '../lib/constants.js';
 
 /**
  * Controls bar component allowing selection of redaction mode and
@@ -8,11 +8,20 @@ import { ENTITY_TYPES, ENTITY_METADATA, REDACTION_MODES } from '../lib/constants
  * @param {Object} props
  * @param {string} props.mode - Current redaction mode from REDACTION_MODES.
  * @param {function(string): void} props.onModeChange - Mode change callback.
+ * @param {Record<string, string>} [props.typeModes] - Per-type modes for Custom mode.
+ * @param {function(string, string): void} [props.onTypeModeChange] - Per-type mode change callback.
  * @param {Object.<string, boolean>} props.enabledTypes - Map of enabled entity types.
  * @param {function(string): void} props.onToggleType - Toggle entity type callback.
  * @returns {React.ReactElement} The ControlsBar component.
  */
-export default function ControlsBar({ mode, onModeChange, enabledTypes, onToggleType }) {
+export default function ControlsBar({
+  mode,
+  onModeChange,
+  typeModes = DEFAULT_CUSTOM_TYPE_MODES,
+  onTypeModeChange,
+  enabledTypes,
+  onToggleType,
+}) {
   const modes = [
     {
       id: REDACTION_MODES.FULL,
@@ -29,6 +38,11 @@ export default function ControlsBar({ mode, onModeChange, enabledTypes, onToggle
       name: 'Consistent Pseudonym',
       desc: 'EMAIL_01',
     },
+    {
+      id: REDACTION_MODES.CUSTOM,
+      name: 'Custom',
+      desc: 'Per-type rules',
+    },
   ];
 
   return (
@@ -43,7 +57,7 @@ export default function ControlsBar({ mode, onModeChange, enabledTypes, onToggle
           Redaction Mode
         </span>
         <div
-          className="mode-toggle-group"
+          className="mode-toggle-group mode-toggle-group-4"
           role="radiogroup"
           aria-labelledby="mode-group-label"
         >
@@ -65,6 +79,44 @@ export default function ControlsBar({ mode, onModeChange, enabledTypes, onToggle
           })}
         </div>
       </div>
+
+      {/* Custom Redaction Mode Panel */}
+      {mode === REDACTION_MODES.CUSTOM && (
+        <div className="custom-mode-panel" role="region" aria-label="Custom Redaction Settings">
+          <div className="custom-panel-header">
+            <span className="custom-panel-title">Per-Entity Redaction Strategy</span>
+            <span className="custom-panel-desc">
+              Define granular default masking rules per entity type. You can still override individual items in the audit view.
+            </span>
+          </div>
+          <div className="custom-type-grid">
+            {Object.values(ENTITY_TYPES).map((type) => {
+              const meta = ENTITY_METADATA[type];
+              const currentTypeMode = typeModes[type] || DEFAULT_CUSTOM_TYPE_MODES[type] || REDACTION_MODES.FULL;
+              const selectId = `custom-select-${type.toLowerCase()}`;
+
+              return (
+                <div key={type} className="custom-type-field">
+                  <label htmlFor={selectId} className="custom-type-label">
+                    <span className="custom-type-dot" style={{ backgroundColor: meta.badgeColor }} aria-hidden="true" />
+                    <span>{meta.label}</span>
+                  </label>
+                  <select
+                    id={selectId}
+                    className="custom-type-select"
+                    value={currentTypeMode}
+                    onChange={(e) => onTypeModeChange && onTypeModeChange(type, e.target.value)}
+                  >
+                    <option value={REDACTION_MODES.FULL}>Full Mask ([REDACTED])</option>
+                    <option value={REDACTION_MODES.PARTIAL}>Partial Mask (Contextual)</option>
+                    <option value={REDACTION_MODES.PSEUDONYM}>Pseudonym (ID_01)</option>
+                  </select>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Entity Type Checkbox Filters */}
       <div className="control-group">

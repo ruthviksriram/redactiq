@@ -1,18 +1,22 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import HighlightedText from './HighlightedText.jsx';
-import { REDACTION_MODES } from '../lib/constants.js';
+import OverridePopover from './OverridePopover.jsx';
+import { REDACTION_MODES, OVERRIDE_OPTIONS } from '../lib/constants.js';
 
 /**
  * Side-by-side audit view component:
- * Left panel = Original text with detected entities highlighted and labeled.
+ * Left panel = Original text with detected entities highlighted, labeled, and interactive for overrides.
  * Right panel = Sanitized output with redaction replacements highlighted and labeled.
  *
  * @param {Object} props
  * @param {string} props.originalText - Source text.
  * @param {import('../lib/detectors.js').DetectedEntity[]} props.matches - Detected entities.
  * @param {string} props.sanitizedText - Sanitized output text.
- * @param {Array<{ placeholder: string, original: string, type: string, start: number, end: number }>} props.replacements - Sanitized replacement spans.
+ * @param {Array<{ placeholder: string, original: string, type: string, start: number, end: number, mode?: string, isExcluded?: boolean }>} props.replacements - Sanitized replacement spans.
  * @param {string} props.mode - Active redaction mode.
+ * @param {Record<string, string>} [props.overrides] - Active per-item overrides map.
+ * @param {function(string, string): void} [props.onOverrideChange] - Override change callback (key, option).
+ * @param {function(): void} [props.onResetOverrides] - Reset all overrides callback.
  * @returns {React.ReactElement} The AuditView component.
  */
 export default function AuditView({
@@ -21,14 +25,51 @@ export default function AuditView({
   sanitizedText,
   replacements,
   mode,
+  overrides = {},
+  onOverrideChange,
+  onResetOverrides,
 }) {
+  const [popoverState, setPopoverState] = useState(null); // { entity, anchorRect, triggerElement }
+  const triggerRef = useRef(null);
+
   const modeLabels = {
     [REDACTION_MODES.FULL]: 'Full Mask',
     [REDACTION_MODES.PARTIAL]: 'Partial Mask',
     [REDACTION_MODES.PSEUDONYM]: 'Consistent Pseudonym',
+    [REDACTION_MODES.CUSTOM]: 'Custom per-type',
   };
 
   const isEmpty = !originalText.trim();
+  const overrideCount = Object.keys(overrides).length;
+
+  const handleSelectEntity = (entity, triggerElement) => {
+    triggerRef.current = triggerElement;
+    const rect = triggerElement.getBoundingClientRect();
+    setPopoverState({
+      entity,
+      anchorRect: {
+        top: rect.top,
+        bottom: rect.bottom,
+        left: rect.left,
+        right: rect.right,
+        width: rect.width,
+        height: rect.height,
+      },
+    });
+  };
+
+  const handleClosePopover = () => {
+    setPopoverState(null);
+    if (triggerRef.current) {
+      triggerRef.current.focus();
+    }
+  };
+
+  const handleApplyOverride = (optionId) => {
+    if (!popoverState?.entity || !onOverrideChange) return;
+    const itemKey = `${popoverState.entity.type}::${popoverState.entity.normalized}`;
+    onOverrideChange(itemKey, optionId);
+  };
 
   return (
     <section className="audit-view-section" aria-labelledby="audit-view-heading">
@@ -43,10 +84,27 @@ export default function AuditView({
             <div className="panel-title-group">
               <span className="panel-dot original-dot" aria-hidden="true"></span>
               <h3 className="panel-title">Original Source</h3>
+              <span className="panel-hint-text">(Click highlighted items to override)</span>
             </div>
-            <span className="panel-badge original-badge">
-              {matches.length} {matches.length === 1 ? 'entity' : 'entities'} detected
-            </span>
+            <div className="panel-header-actions">
+              {overrideCount > 0 && onResetOverrides && (
+                <button
+                  type="button"
+                  onClick={onResetOverrides}
+                  className="btn-reset-overrides btn-3d"
+                  aria-label="Reset all per-item overrides to default rules"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                  </svg>
+                  <span>Reset overrides ({overrideCount})</span>
+                </button>
+              )}
+              <span className="panel-badge original-badge">
+                {matches.length} {matches.length === 1 ? 'entity' : 'entities'} detected
+              </span>
+            </div>
           </div>
 
           <div className="panel-body">
@@ -72,7 +130,14 @@ export default function AuditView({
                 <span>Paste text or click &quot;Load Sample&quot; above to inspect detected entities.</span>
               </div>
             ) : (
-              <HighlightedText text={originalText} spans={matches} isRedacted={false} />
+              <HighlightedText
+                text={originalText}
+                spans={matches}
+                isRedacted={false}
+                allowOverrides={true}
+                overrides={overrides}
+                onSelectEntity={handleSelectEntity}
+              />
             )}
           </div>
         </div>
@@ -113,11 +178,27 @@ export default function AuditView({
                 text={sanitizedText}
                 spans={replacements}
                 isRedacted={true}
+                overrides={overrides}
               />
             )}
           </div>
         </div>
       </div>
+
+      {/* Override Popover */}
+      {popoverState && (
+        <OverridePopover
+          entity={popoverState.entity}
+          currentOverride={
+            overrides[`${popoverState.entity.type}::${popoverState.entity.normalized}`] ||
+            overrides[popoverState.entity.normalized] ||
+            OVERRIDE_OPTIONS.DEFAULT
+          }
+          anchorRect={popoverState.anchorRect}
+          onSelect={handleApplyOverride}
+          onClose={handleClosePopover}
+        />
+      )}
     </section>
   );
 }

@@ -159,4 +159,97 @@ describe('redact.js', () => {
       }
     });
   });
+
+  describe('Custom Mode and Per-Item Overrides (Part 1)', () => {
+    const text = 'User john@corp.com with phone +91 98765 43210 and card 4111 1111 1111 1111. Again john@corp.com called.';
+    const e1 = 'john@corp.com';
+    const p1 = '+91 98765 43210';
+    const c1 = '4111 1111 1111 1111';
+    const s1 = text.indexOf(e1);
+    const s2 = text.indexOf(p1);
+    const s3 = text.indexOf(c1);
+    const s4 = text.lastIndexOf(e1);
+
+    const matches = [
+      { type: ENTITY_TYPES.EMAIL, value: e1, start: s1, end: s1 + e1.length, normalized: e1 },
+      { type: ENTITY_TYPES.PHONE, value: p1, start: s2, end: s2 + p1.length, normalized: '9876543210' },
+      { type: ENTITY_TYPES.CREDIT_CARD, value: c1, start: s3, end: s3 + c1.length, normalized: '4111111111111111' },
+      { type: ENTITY_TYPES.EMAIL, value: e1, start: s4, end: s4 + e1.length, normalized: e1 },
+    ];
+
+    it('supports custom per-type mode map with mixed modes', () => {
+      // Mixed case: EMAIL = partial, CREDIT_CARD = full, PHONE = pseudonym
+      const typeModes = {
+        [ENTITY_TYPES.EMAIL]: REDACTION_MODES.PARTIAL,
+        [ENTITY_TYPES.CREDIT_CARD]: REDACTION_MODES.FULL,
+        [ENTITY_TYPES.PHONE]: REDACTION_MODES.PSEUDONYM,
+      };
+
+      const res = redactText(text, matches, {
+        mode: REDACTION_MODES.CUSTOM,
+        typeModes,
+        overrides: {},
+      });
+
+      expect(res.sanitizedText).toBe(
+        'User j***@corp.com with phone PHONE_01 and card [REDACTED_CREDIT_CARD]. Again j***@corp.com called.'
+      );
+      expect(res.mapping).toHaveLength(1);
+      expect(res.mapping[0].placeholder).toBe('PHONE_01');
+    });
+
+    it('prioritizes per-item override over custom type mode', () => {
+      const typeModes = {
+        [ENTITY_TYPES.CREDIT_CARD]: REDACTION_MODES.FULL,
+      };
+      // Override the credit card to PARTIAL instead of FULL
+      const overrides = {
+        [`${ENTITY_TYPES.CREDIT_CARD}::4111111111111111`]: REDACTION_MODES.PARTIAL,
+      };
+
+      const res = redactText(text, matches, {
+        mode: REDACTION_MODES.CUSTOM,
+        typeModes,
+        overrides,
+      });
+
+      expect(res.sanitizedText).toContain('card XXXX-XXXX-XXXX-1111');
+      expect(res.sanitizedText).not.toContain('[REDACTED_CREDIT_CARD]');
+    });
+
+    it('leaves original value intact when override is none ("Don\'t redact")', () => {
+      const overrides = {
+        [`${ENTITY_TYPES.EMAIL}::john@corp.com`]: 'NONE',
+      };
+
+      const res = redactText(text, matches, {
+        mode: REDACTION_MODES.FULL,
+        overrides,
+      });
+
+      // Both occurrences of john@corp.com must remain completely unredacted
+      expect(res.sanitizedText).toContain('User john@corp.com with phone [REDACTED_PHONE]');
+      expect(res.sanitizedText).toContain('Again john@corp.com called.');
+      expect(res.excludedCount).toBe(2);
+    });
+
+    it('overrides every occurrence of the same normalized entity simultaneously', () => {
+      const overrides = {
+        [`${ENTITY_TYPES.EMAIL}::john@corp.com`]: REDACTION_MODES.PSEUDONYM,
+      };
+
+      const res = redactText(text, matches, {
+        mode: REDACTION_MODES.FULL,
+        overrides,
+      });
+
+      // Both email occurrences must receive EMAIL_01
+      expect(res.sanitizedText).toBe(
+        'User EMAIL_01 with phone [REDACTED_PHONE] and card [REDACTED_CREDIT_CARD]. Again EMAIL_01 called.'
+      );
+      expect(res.mapping).toHaveLength(1);
+      expect(res.mapping[0].placeholder).toBe('EMAIL_01');
+      expect(res.mapping[0].original).toBe('john@corp.com');
+    });
+  });
 });

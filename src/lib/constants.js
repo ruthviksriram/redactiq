@@ -74,4 +74,44 @@ export const REDACTION_MODES = {
   FULL: 'FULL',
   PARTIAL: 'PARTIAL',
   PSEUDONYM: 'PSEUDONYM',
+  CUSTOM: 'CUSTOM',
+};
+
+/**
+ * Per-item override options.
+ * @readonly
+ * @enum {string}
+ */
+export const OVERRIDE_OPTIONS = {
+  DEFAULT: 'DEFAULT',
+  FULL: 'FULL',
+  PARTIAL: 'PARTIAL',
+  PSEUDONYM: 'PSEUDONYM',
+  NONE: 'NONE', // Don't redact
+};
+
+/**
+ * Default entity type mappings in Custom mode.
+ * Defaults: Email = Partial, Aadhaar = Partial, everything else = Full Mask.
+ */
+export const DEFAULT_CUSTOM_TYPE_MODES = {
+  [ENTITY_TYPES.EMAIL]: REDACTION_MODES.PARTIAL,
+  [ENTITY_TYPES.AADHAAR]: REDACTION_MODES.PARTIAL,
+  [ENTITY_TYPES.PHONE]: REDACTION_MODES.FULL,
+  [ENTITY_TYPES.IP]: REDACTION_MODES.FULL,
+  [ENTITY_TYPES.PAN]: REDACTION_MODES.FULL,
+  [ENTITY_TYPES.CREDIT_CARD]: REDACTION_MODES.FULL,
+};
+
+/**
+ * Sensitivity weights for risk score calculation (0 - 100).
+ * CREDIT_CARD and AADHAAR high, PAN and PHONE medium, EMAIL medium-low, IP low.
+ */
+export const ENTITY_WEIGHTS = {
+  [ENTITY_TYPES.CREDIT_CARD]: 30,
+  [ENTITY_TYPES.AADHAAR]: 25,
+  [ENTITY_TYPES.PAN]: 20,
+  [ENTITY_TYPES.PHONE]: 15,
+  [ENTITY_TYPES.EMAIL]: 10,
+  [ENTITY_TYPES.IP]: 5,
 };

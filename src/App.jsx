@@ -10,7 +10,12 @@ import CustomCursor from './components/CustomCursor.jsx';
 import { useCardTilt, useButtonGlow } from './lib/useEffects3D.js';
 import { detectEntities } from './lib/detectors.js';
 import { redactText } from './lib/redact.js';
-import { ENTITY_TYPES, REDACTION_MODES } from './lib/constants.js';
+import {
+  ENTITY_TYPES,
+  REDACTION_MODES,
+  OVERRIDE_OPTIONS,
+  DEFAULT_CUSTOM_TYPE_MODES,
+} from './lib/constants.js';
 
 /**
  * Main application coordinator component for RedactIQ.
@@ -41,6 +46,8 @@ export default function App() {
   const [debouncedText, setDebouncedText] = useState('');
   const [fileName, setFileName] = useState(null);
   const [mode, setMode] = useState(REDACTION_MODES.FULL);
+  const [typeModes, setTypeModes] = useState(DEFAULT_CUSTOM_TYPE_MODES);
+  const [overrides, setOverrides] = useState({});
   const [enabledTypes, setEnabledTypes] = useState({
     [ENTITY_TYPES.EMAIL]: true,
     [ENTITY_TYPES.PHONE]: true,
@@ -93,6 +100,44 @@ export default function App() {
     }));
   };
 
+  /**
+   * Changes default redaction mode for a specific entity type in Custom mode.
+   * @param {string} type - Entity type.
+   * @param {string} newMode - Redaction mode.
+   */
+  const handleTypeModeChange = (type, newMode) => {
+    setTypeModes((prev) => ({
+      ...prev,
+      [type]: newMode,
+    }));
+  };
+
+  /**
+   * Updates or clears a per-item override for a normalized entity.
+   * @param {string} key - Composite key (e.g. EMAIL::test@example.com).
+   * @param {string} option - Selected option from OVERRIDE_OPTIONS.
+   */
+  const handleOverrideChange = (key, option) => {
+    setOverrides((prev) => {
+      if (option === OVERRIDE_OPTIONS.DEFAULT) {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      }
+      return {
+        ...prev,
+        [key]: option,
+      };
+    });
+  };
+
+  /**
+   * Resets all per-item overrides back to defaults.
+   */
+  const handleResetOverrides = () => {
+    setOverrides({});
+  };
+
   // Pure memoized entity detection
   const detectionResult = useMemo(() => {
     if (!debouncedText) {
@@ -104,10 +149,14 @@ export default function App() {
   // Pure memoized redaction transformation
   const redactionResult = useMemo(() => {
     if (!debouncedText) {
-      return { sanitizedText: '', replacements: [], mapping: [] };
+      return { sanitizedText: '', replacements: [], mapping: [], excludedCount: 0 };
     }
-    return redactText(debouncedText, detectionResult.matches, mode);
-  }, [debouncedText, detectionResult.matches, mode]);
+    return redactText(debouncedText, detectionResult.matches, {
+      mode,
+      typeModes,
+      overrides,
+    });
+  }, [debouncedText, detectionResult.matches, mode, typeModes, overrides]);
 
   return (
     <div className="app-shell">
@@ -124,6 +173,8 @@ export default function App() {
         <ControlsBar
           mode={mode}
           onModeChange={setMode}
+          typeModes={typeModes}
+          onTypeModeChange={handleTypeModeChange}
           enabledTypes={enabledTypes}
           onToggleType={handleToggleType}
         />
@@ -132,6 +183,7 @@ export default function App() {
           matches={detectionResult.matches}
           luhnFailedCount={detectionResult.luhnFailedCount}
           enabledTypes={enabledTypes}
+          excludedCount={redactionResult.excludedCount || 0}
         />
 
         <AuditView
@@ -140,6 +192,9 @@ export default function App() {
           sanitizedText={redactionResult.sanitizedText}
           replacements={redactionResult.replacements}
           mode={mode}
+          overrides={overrides}
+          onOverrideChange={handleOverrideChange}
+          onResetOverrides={handleResetOverrides}
         />
 
         <ExportBar
@@ -147,7 +202,7 @@ export default function App() {
           fileName={fileName}
         />
 
-        {mode === REDACTION_MODES.PSEUDONYM && (
+        {redactionResult.mapping && redactionResult.mapping.length > 0 && (
           <MappingTable mapping={redactionResult.mapping} />
         )}
       </main>

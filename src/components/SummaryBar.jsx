@@ -11,7 +11,12 @@ import { ENTITY_TYPES, ENTITY_METADATA } from '../lib/constants.js';
  * @param {Object.<string, boolean>} props.enabledTypes - Map of enabled types.
  * @returns {React.ReactElement} The SummaryBar component.
  */
-export default function SummaryBar({ matches, luhnFailedCount, enabledTypes }) {
+export default function SummaryBar({
+  matches,
+  luhnFailedCount = 0,
+  enabledTypes = {},
+  excludedCount = 0,
+}) {
   // Aggregate counts per entity type
   const countsByType = {
     [ENTITY_TYPES.EMAIL]: 0,
@@ -38,9 +43,17 @@ export default function SummaryBar({ matches, luhnFailedCount, enabledTypes }) {
 
       {/* Main Stats Row */}
       <div className="summary-main-row">
-        <div className="total-stat-badge">
-          <span className="total-label">Total PII Detected</span>
-          <span className="total-number">{totalCount}</span>
+        <div className="summary-badges-group">
+          <div className="total-stat-badge">
+            <span className="total-label">Total PII Detected</span>
+            <span className="total-number">{totalCount}</span>
+          </div>
+          {excludedCount > 0 && (
+            <div className="excluded-stat-badge" title="Items explicitly marked as 'Don't redact'">
+              <span className="excluded-label">Excluded from Redaction</span>
+              <span className="excluded-number">{excludedCount}</span>
+            </div>
+          )}
         </div>
 
         {/* Counts per entity type */}

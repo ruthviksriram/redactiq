@@ -1,5 +1,5 @@
 import React from 'react';
-import { ENTITY_METADATA } from '../lib/constants.js';
+import { ENTITY_METADATA, OVERRIDE_OPTIONS } from '../lib/constants.js';
 
 /**
  * Pure tokenized renderer for highlighting text spans as native React elements.
@@ -8,11 +8,21 @@ import { ENTITY_METADATA } from '../lib/constants.js';
  *
  * @param {Object} props
  * @param {string} props.text - Full text to render.
- * @param {Array<{ start: number, end: number, type: string, value?: string, placeholder?: string }>} props.spans - Slices to highlight.
+ * @param {Array<{ start: number, end: number, type: string, value?: string, placeholder?: string, normalized?: string, mode?: string, isExcluded?: boolean }>} props.spans - Slices to highlight.
  * @param {boolean} [props.isRedacted] - True if rendering sanitized replacements.
+ * @param {boolean} [props.allowOverrides] - True if clicking spans triggers override popover.
+ * @param {Record<string, string>} [props.overrides] - Map of active overrides.
+ * @param {function(object, HTMLElement): void} [props.onSelectEntity] - Callback when an entity is clicked.
  * @returns {React.ReactElement} The tokenized content fragment.
  */
-export default function HighlightedText({ text, spans, isRedacted = false }) {
+export default function HighlightedText({
+  text,
+  spans,
+  isRedacted = false,
+  allowOverrides = false,
+  overrides = {},
+  onSelectEntity,
+}) {
   if (!text) return null;
   if (!spans || spans.length === 0) {
     return <span className="plain-text-stream">{text}</span>;
@@ -43,20 +53,64 @@ export default function HighlightedText({ text, spans, isRedacted = false }) {
       textColor: '#082f49',
     };
 
+    // Check if this entity has an active override
+    const itemKey = `${span.type}::${span.normalized}`;
+    const activeOverride = overrides[itemKey] || overrides[span.normalized];
+    const hasOverride = Boolean(activeOverride && activeOverride !== OVERRIDE_OPTIONS.DEFAULT);
+    const isUnredacted = span.isExcluded || activeOverride === OVERRIDE_OPTIONS.NONE;
+
+    const handleKeyDown = (e) => {
+      if (allowOverrides && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        if (onSelectEntity) {
+          onSelectEntity(span, e.currentTarget);
+        }
+      }
+    };
+
+    const handleClick = (e) => {
+      if (allowOverrides && onSelectEntity) {
+        onSelectEntity(span, e.currentTarget);
+      }
+    };
+
     elements.push(
       <mark
         key={`mark-${start}-${end}-${i}`}
-        className={`entity-highlight ${isRedacted ? 'is-redacted' : ''}`}
+        className={`entity-highlight ${isRedacted ? 'is-redacted' : ''} ${
+          allowOverrides ? 'is-interactive' : ''
+        } ${hasOverride ? 'has-override' : ''} ${isUnredacted ? 'is-unredacted-span' : ''}`}
         style={{
           '--hl-bg': meta.badgeColor,
           '--hl-text': meta.textColor,
         }}
-        title={`${meta.label}: ${tokenText}`}
+        title={
+          hasOverride
+            ? `${meta.label} (${tokenText}) - Override active: ${activeOverride}`
+            : `${meta.label}: ${tokenText}`
+        }
+        role={allowOverrides ? 'button' : undefined}
+        tabIndex={allowOverrides ? 0 : undefined}
+        aria-haspopup={allowOverrides ? 'menu' : undefined}
+        aria-label={
+          allowOverrides
+            ? `Click to override redaction for ${meta.label}: ${tokenText}${
+                hasOverride ? ` (edited: ${activeOverride})` : ''
+              }`
+            : undefined
+        }
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
       >
         <span className="entity-text">{tokenText}</span>
         <span className="entity-type-tag" aria-label={`Type: ${meta.label}`}>
           {span.type}
         </span>
+        {hasOverride && (
+          <span className="override-badge-marker" aria-label={`Override: ${activeOverride}`}>
+            • edited
+          </span>
+        )}
       </mark>
     );
 

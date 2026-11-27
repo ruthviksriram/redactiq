@@ -178,3 +178,21 @@ export function validatePAN(pan) {
   const validFourthChars = new Set(['P', 'C', 'H', 'F', 'A', 'T', 'B', 'L', 'J', 'G']);
   return validFourthChars.has(fourthChar);
 }
+
+/**
+ * Sanitizes an uploaded file name to prevent path traversal, control character injection,
+ * and dangerous filesystem characters.
+ *
+ * @param {string} rawName - Raw filename string from upload.
+ * @returns {string} Clean, safe filename.
+ */
+export function sanitizeFileName(rawName) {
+  if (typeof rawName !== 'string' || !rawName.trim()) return '';
+  // Strip path prefixes (e.g. ../ or /etc/ or C:\)
+  const baseName = rawName.replace(/^.*[\\/]/, '');
+  // Replace illegal or dangerous characters with underscores
+  const safe = baseName.replace(/[^a-zA-Z0-9._-]/g, '_').trim();
+  // Strip leading dots to prevent hidden files or traversal
+  const clean = safe.replace(/^\.+/, '');
+  return clean || 'sanitized_document.txt';
+}

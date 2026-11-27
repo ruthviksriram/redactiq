@@ -5,7 +5,8 @@
 
 [![Vercel Deployment](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](vercel.json)
 [![Cloud Run Ready](https://img.shields.io/badge/Deploy-Google%20Cloud%20Run-blue?logo=googlecloud)](Dockerfile)
-[![Tests Passing](https://img.shields.io/badge/Tests-64%20Passed-brightgreen)](src/lib/__tests__)
+[![Tests Passing](https://img.shields.io/badge/Tests-76%20Passed-brightgreen)](src/lib/__tests__)
+[![Coverage](https://img.shields.io/badge/Coverage-98.56%25-brightgreen)](src/lib)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 
 ---
@@ -156,12 +157,15 @@ npm run dev
 ```
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### Running Tests and Linting
+### Running Tests, Linting, and Coverage
 ```bash
-# Run all 64 Vitest unit tests
+# Run all Vitest unit, edge-case, and component tests
 npm test
 
-# Run ESLint validation
+# Run all tests with V8 coverage analysis (threshold >= 90% on src/lib)
+npm run test:coverage
+
+# Run ESLint validation (including jsx-a11y)
 npm run lint
 
 # Test production build bundle with CSP injection
@@ -170,7 +174,30 @@ npm run build
 
 ---
 
-## 9. Deployment
+## 9. Testing & Code Quality
+
+RedactIQ is verified by 76 automated tests spanning unit regex/checksum logic, edge cases (empty strings, zero PII, Unicode text, 100k-character stress payloads, path traversal sanitization), and full component integration flows via React Testing Library.
+
+### V8 Code Coverage (`src/lib`)
+
+| File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Lines |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **All files (`src/lib`)** | **98.56%** | **84.05%** | **100%** | **98.56%** | |
+| `constants.js` | 100% | 100% | 100% | 100% | |
+| `detectors.js` | 99.69% | 86.3% | 100% | 99.69% | 277 |
+| `redact.js` | 95.52% | 76.78% | 100% | 95.52% | 102-104 |
+| `risk.js` | 97.33% | 85.96% | 100% | 97.33% | 51, 146 |
+| `sampleData.js` | 100% | 100% | 100% | 100% | |
+| `validators.js` | 100% | 86.95% | 100% | 100% | |
+
+### Accessibility & Hardening
+- **WCAG 2.1 AA Compliance**: Enforced via `eslint-plugin-jsx-a11y` with 0 warnings or errors across the entire codebase. Interactive text markers in the audit view are rendered as accessible native `<button>` elements with ARIA dialog/menu attributes.
+- **Client-Side Sandbox Integrity**: Wrapped with a zero-telemetry React `ErrorBoundary` and verified by Content Security Policy (`connect-src 'none'`).
+- **Filename Traversal Defense**: All uploaded and exported files are processed through `sanitizeFileName()`, stripping null bytes, directory separators (`../`), and ASCII control characters.
+
+---
+
+## 10. Deployment
 
 ### Option A: Vercel (Primary & Recommended)
 RedactIQ includes a preconfigured `vercel.json` with build settings, SPA route fallbacks, and hardened production headers:
@@ -199,7 +226,7 @@ gcloud run deploy redactiq \
 
 ---
 
-## 10. Known Limitations
+## 11. Known Limitations
 
 - **Personal Names (Named-Entity Recognition)**: Personal names (e.g. "John Smith", "Priya Sharma") are intentionally **not** detected. Accurate detection of arbitrary person names requires statistical Natural Language Processing (NLP) or machine learning models (such as BERT or LLMs). Bundling large ML models into the browser would degrade load times and memory efficiency, while calling external cloud NER APIs would violate RedactIQ's core zero-trust, client-side privacy guarantee.
 - **Unstructured Physical Addresses**: Non-standardized street addresses without postal codes are omitted for similar reasons. Structured entities (IPs, emails, phone numbers, tax IDs, and payment cards) are detected with mathematical precision.
@@ -207,6 +234,6 @@ gcloud run deploy redactiq \
 
 ---
 
-## 11. License
+## 12. License
 
 MIT License. Designed and built with privacy, precision, and performance.

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { sanitizeFileName } from '../lib/validators.js';
+import { DEFAULT_OUTPUT_FILENAME } from '../lib/constants.js';
 
 /**
  * @file Export bar component providing 1-click download and clipboard copying.
@@ -21,11 +23,11 @@ export default function ExportBar({
   const hasContent = Boolean(sanitizedText && sanitizedText.trim().length > 0);
 
   // Compute clean output filename preserving original extension
-  const cleanOriginalName = fileName ? fileName.trim() : '';
+  const cleanOriginalName = fileName ? sanitizeFileName(fileName) : '';
   const isCsv = cleanOriginalName.toLowerCase().endsWith('.csv');
   const exportFileName = cleanOriginalName
     ? `sanitized_${cleanOriginalName}`
-    : 'sanitized_output.txt';
+    : DEFAULT_OUTPUT_FILENAME;
 
   /**
    * Downloads the sanitized text as a pure text or CSV file.

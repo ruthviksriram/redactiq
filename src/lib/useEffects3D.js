@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 /**
  * Attaches lightweight 3D perspective tilt and specular glare highlights to cards.
  * Automatically respects prefers-reduced-motion.
+ *
+ * @returns {void}
  */
 export function useCardTilt() {
   useEffect(() => {
@@ -55,6 +57,8 @@ export function useCardTilt() {
 
 /**
  * Attaches mouse-following glow coordinates to interactive buttons.
+ *
+ * @returns {void}
  */
 export function useButtonGlow() {
   useEffect(() => {

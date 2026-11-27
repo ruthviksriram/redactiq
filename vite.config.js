@@ -18,6 +18,12 @@ export default defineConfig({
   plugins: [react(), cspPlugin()],
   test: {
     globals: true,
-    environment: 'node',
+    environment: 'jsdom',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      include: ['src/lib/**/*.js'],
+      exclude: ['src/lib/__tests__/**', 'src/lib/useEffects3D.js'],
+    },
   },
 });

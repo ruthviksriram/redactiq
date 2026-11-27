@@ -74,34 +74,8 @@ export default function HighlightedText({
       }
     };
 
-    elements.push(
-      <mark
-        key={`mark-${start}-${end}-${i}`}
-        className={`entity-highlight ${isRedacted ? 'is-redacted' : ''} ${
-          allowOverrides ? 'is-interactive' : ''
-        } ${hasOverride ? 'has-override' : ''} ${isUnredacted ? 'is-unredacted-span' : ''}`}
-        style={{
-          '--hl-bg': meta.badgeColor,
-          '--hl-text': meta.textColor,
-        }}
-        title={
-          hasOverride
-            ? `${meta.label} (${tokenText}) - Override active: ${activeOverride}`
-            : `${meta.label}: ${tokenText}`
-        }
-        role={allowOverrides ? 'button' : undefined}
-        tabIndex={allowOverrides ? 0 : undefined}
-        aria-haspopup={allowOverrides ? 'menu' : undefined}
-        aria-label={
-          allowOverrides
-            ? `Click to override redaction for ${meta.label}: ${tokenText}${
-                hasOverride ? ` (edited: ${activeOverride})` : ''
-              }`
-            : undefined
-        }
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-      >
+    const content = (
+      <>
         <span className="entity-text">{tokenText}</span>
         <span
           className={`entity-type-tag ${span.unverified ? 'is-unverified' : ''}`}
@@ -114,8 +88,59 @@ export default function HighlightedText({
             • edited
           </span>
         )}
-      </mark>
+      </>
     );
+
+    if (allowOverrides) {
+      elements.push(
+        <button
+          key={`mark-${start}-${end}-${i}`}
+          type="button"
+          className={`entity-highlight entity-highlight-btn ${
+            isRedacted ? 'is-redacted' : ''
+          } is-interactive ${hasOverride ? 'has-override' : ''} ${
+            isUnredacted ? 'is-unredacted-span' : ''
+          }`}
+          style={{
+            '--hl-bg': meta.badgeColor,
+            '--hl-text': meta.textColor,
+          }}
+          title={
+            hasOverride
+              ? `${meta.label} (${tokenText}) - Override active: ${activeOverride}`
+              : `${meta.label}: ${tokenText}`
+          }
+          aria-haspopup="menu"
+          aria-label={`Click to override redaction for ${meta.label}: ${tokenText}${
+            hasOverride ? ` (edited: ${activeOverride})` : ''
+          }`}
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+        >
+          {content}
+        </button>
+      );
+    } else {
+      elements.push(
+        <mark
+          key={`mark-${start}-${end}-${i}`}
+          className={`entity-highlight ${isRedacted ? 'is-redacted' : ''} ${
+            hasOverride ? 'has-override' : ''
+          } ${isUnredacted ? 'is-unredacted-span' : ''}`}
+          style={{
+            '--hl-bg': meta.badgeColor,
+            '--hl-text': meta.textColor,
+          }}
+          title={
+            hasOverride
+              ? `${meta.label} (${tokenText}) - Override active: ${activeOverride}`
+              : `${meta.label}: ${tokenText}`
+          }
+        >
+          {content}
+        </mark>
+      );
+    }
 
     cursor = end;
   }

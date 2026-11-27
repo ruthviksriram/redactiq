@@ -281,6 +281,33 @@ Run `npm test`, `npm run lint` and `npm run build`, test in the browser in both 
 ```
 *Note: Completed fixes - set Light theme as initial visit default while preserving toggle and localStorage persistence; added Verhoeff failure tracking (`verhoeffFailedCount`) for 12-digit Aadhaar candidates; added "Strict checksum validation" toggle in ControlsBar with non-strict redaction of pattern-matching cards/Aadhaar labeled as "unverified"; updated summary notice to "Checksum-failed numbers ignored: N cards (Luhn), M Aadhaar-like (Verhoeff)"; updated risk guidance wording to eliminate "Safe to transmit" and include checksum failure advisory; styled "Download audit report (JSON)" button identically to secondary export buttons; replaced 💾 with an SVG line icon; added unit tests in detectors.test.js, sampleData.test.js, and risk.test.js (64 passing tests).*
 
+## Prompt 12
+```
+Final code-quality hardening pass for an automated code review (code quality, security, efficiency, testing, accessibility). Do NOT change the UI design or any behaviour. Time limit: about 15 minutes. If any new dependency fails to install or causes errors, skip that item and continue.
+
+Testing
+- Add @testing-library/react, @testing-library/user-event and jsdom, and write a few component tests for the main flows: Load Sample shows counts, switching modes changes the output, toggling an entity type updates the count, uploading a non .txt/.csv file shows an error, and the exported text contains no type labels
+- Add @vitest/coverage-v8 and a "test:coverage" script; aim for at least 90% coverage on src/lib
+- Add edge-case tests: empty input, text with no PII, Unicode text, a very long input
+
+Code quality
+- Add eslint-plugin-jsx-a11y (recommended rules) and fix every warning
+- Make sure every exported function and component has a JSDoc comment with @param and @returns
+- Add a React ErrorBoundary around the app with a friendly fallback message
+- Remove dead code, unused imports, console.logs and magic numbers (move them to constants.js)
+
+Security
+- Sanitise the uploaded file name before displaying it or using it in the download name
+- Confirm no user text is ever written to localStorage, the console or the URL
+- Add a short SECURITY.md describing the privacy model (no network, CSP, in-memory only)
+
+Efficiency
+- Confirm regexes are compiled once at module level and detection is memoised and debounced
+
+Finish: run `npm run lint`, `npm run test:coverage` and `npm run build` (all must pass), test the app in the browser to confirm nothing changed, update PROMPT_LOG.md and add a Testing section with coverage numbers to the README, commit to main and push. Show me the coverage summary and the push output.
+```
+*Note: Hardening pass completed - added @testing-library/react and jsdom component tests (Flows 1-5); added @vitest/coverage-v8 achieving 98.56% statement & line coverage on src/lib; added comprehensive edge-case tests (empty, whitespace, zero PII, Unicode, 100k-char stress test, filename security); configured eslint-plugin-jsx-a11y with 0 warnings; added JSDoc @param and @returns across all exports; added ErrorBoundary around App; centralized magic numbers into constants.js; implemented sanitizeFileName; confirmed zero user data persistence; authored SECURITY.md; verified memoized detection and module-level regexes.*
+
 
 
 

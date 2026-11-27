@@ -22,6 +22,7 @@ import {
   REDACTION_MODES,
   OVERRIDE_OPTIONS,
   DEFAULT_CUSTOM_TYPE_MODES,
+  DEBOUNCE_DELAY_MS,
 } from './lib/constants.js';
 
 /**
@@ -74,11 +75,11 @@ export default function App() {
     }
   }, [theme]);
 
-  // Debounce input by 200 ms to preserve high-framerate rendering during typing
+  // Debounce input to preserve high-framerate rendering during typing
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedText(rawText);
-    }, 200);
+    }, DEBOUNCE_DELAY_MS);
 
     return () => {
       clearTimeout(handler);

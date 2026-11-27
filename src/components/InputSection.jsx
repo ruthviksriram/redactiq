@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { SAMPLE_TEXT } from '../lib/sampleData.js';
-
-const FIVE_MB = 5 * 1024 * 1024;
-const ALLOWED_EXTENSIONS = ['.txt', '.csv'];
+import { sanitizeFileName } from '../lib/validators.js';
+import { MAX_FILE_SIZE_BYTES, ALLOWED_FILE_EXTENSIONS } from '../lib/constants.js';
 
 /**
  * Input section component handling text pasting, drag-and-drop, file upload,
@@ -34,14 +33,14 @@ export default function InputSection({ text, onTextChange, fileName, onFileNameC
 
     // Check extension
     const nameLower = file.name.toLowerCase();
-    const hasValidExt = ALLOWED_EXTENSIONS.some((ext) => nameLower.endsWith(ext));
+    const hasValidExt = ALLOWED_FILE_EXTENSIONS.some((ext) => nameLower.endsWith(ext));
     if (!hasValidExt) {
       setErrorMessage(`Unsupported file format. Please upload a .txt or .csv file.`);
       return;
     }
 
     // Check size (> 5 MB warning)
-    if (file.size > FIVE_MB) {
+    if (file.size > MAX_FILE_SIZE_BYTES) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
       setWarningMessage(`File size is ${sizeMb} MB (above 5 MB). Detection may take a few seconds.`);
     }
@@ -51,7 +50,7 @@ export default function InputSection({ text, onTextChange, fileName, onFileNameC
       const content = e.target?.result;
       if (typeof content === 'string') {
         onTextChange(content);
-        onFileNameChange(file.name);
+        onFileNameChange(sanitizeFileName(file.name));
       }
     };
     reader.onerror = () => {

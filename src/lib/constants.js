@@ -125,3 +125,33 @@ export const ENTITY_WEIGHTS = {
   [ENTITY_TYPES.EMAIL]: 10,
   [ENTITY_TYPES.IP]: 5,
 };
+
+/**
+ * Debounce interval in milliseconds to preserve 60fps typing responsiveness.
+ */
+export const DEBOUNCE_DELAY_MS = 200;
+
+/**
+ * Maximum recommended file size before showing warning (5 MB).
+ */
+export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+
+/**
+ * Permitted file upload extensions.
+ */
+export const ALLOWED_FILE_EXTENSIONS = ['.txt', '.csv'];
+
+/**
+ * Default fallback filename for pasted text sanitization exports.
+ */
+export const DEFAULT_OUTPUT_FILENAME = 'sanitized_output.txt';
+
+/**
+ * Risk score categorization thresholds.
+ */
+export const RISK_LEVEL_THRESHOLDS = {
+  LOW: 0,
+  MEDIUM: 20,
+  HIGH: 50,
+  CRITICAL: 80,
+};

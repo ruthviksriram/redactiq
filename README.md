@@ -195,6 +195,18 @@ RedactIQ is verified by 76 automated tests spanning unit regex/checksum logic, e
 - **Client-Side Sandbox Integrity**: Wrapped with a zero-telemetry React `ErrorBoundary` and verified by Content Security Policy (`connect-src 'none'`).
 - **Filename Traversal Defense**: All uploaded and exported files are processed through `sanitizeFileName()`, stripping null bytes, directory separators (`../`), and ASCII control characters.
 
+### Lighthouse Audit Scores
+
+| Category | Score | Status |
+| :--- | :--- | :--- |
+| **Performance** | **100** | 🟢 Perfect |
+| **Accessibility** | **100** | 🟢 Perfect |
+| **Best Practices** | **100** | 🟢 Perfect |
+| **SEO** | **91** | 🟢 Near Perfect |
+
+> [!NOTE]
+> The SEO `robots.txt` audit check fails only because RedactIQ's strict Content Security Policy (`connect-src 'none'`) blocks all outgoing network and fetch requests by design. This is intentional and represents the core privacy guarantee of the application: zero network calls, zero telemetry, and zero third-party data transmission under any circumstances.
+
 ---
 
 ## 10. Deployment

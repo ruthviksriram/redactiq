@@ -109,7 +109,12 @@ export default function CustomRulesSection({ rules = [], onRulesChange }) {
           </div>
 
           <div className="rule-field-group">
+            <label htmlFor="custom-rule-pattern-input" className="visually-hidden">
+              {isRegex ? 'Regular expression pattern' : 'Exact keyword'}
+            </label>
             <input
+              id="custom-rule-pattern-input"
+              name="custom-rule-pattern-input"
               type="text"
               value={patternInput}
               onChange={handlePatternChange}

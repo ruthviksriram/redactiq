@@ -105,6 +105,7 @@ export default function ControlsBar({
                   </label>
                   <select
                     id={selectId}
+                    name={selectId}
                     className="custom-type-select"
                     value={currentTypeMode}
                     onChange={(e) => onTypeModeChange && onTypeModeChange(type, e.target.value)}
@@ -133,9 +134,11 @@ export default function ControlsBar({
           {Object.values(ENTITY_TYPES).map((type) => {
             const meta = ENTITY_METADATA[type];
             const isChecked = enabledTypes[type] !== false;
+            const inputId = `filter-entity-${type.toLowerCase()}`;
             return (
               <label
                 key={type}
+                htmlFor={inputId}
                 className={`entity-toggle-pill ${isChecked ? 'is-checked' : 'is-disabled'}`}
                 style={{
                   '--pill-bg': meta.badgeColor,
@@ -143,6 +146,8 @@ export default function ControlsBar({
                 }}
               >
                 <input
+                  id={inputId}
+                  name={inputId}
                   type="checkbox"
                   checked={isChecked}
                   onChange={() => onToggleType(type)}
@@ -166,6 +171,7 @@ export default function ControlsBar({
         <label className="strict-toggle-row" htmlFor="strict-checksum-toggle">
           <input
             id="strict-checksum-toggle"
+            name="strict-checksum-toggle"
             type="checkbox"
             className="strict-toggle-input"
             checked={strictChecksum}

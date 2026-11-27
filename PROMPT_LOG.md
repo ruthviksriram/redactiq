@@ -308,6 +308,20 @@ Finish: run `npm run lint`, `npm run test:coverage` and `npm run build` (all mus
 ```
 *Note: Hardening pass completed - added @testing-library/react and jsdom component tests (Flows 1-5); added @vitest/coverage-v8 achieving 98.56% statement & line coverage on src/lib; added comprehensive edge-case tests (empty, whitespace, zero PII, Unicode, 100k-char stress test, filename security); configured eslint-plugin-jsx-a11y with 0 warnings; added JSDoc @param and @returns across all exports; added ErrorBoundary around App; centralized magic numbers into constants.js; implemented sanitizeFileName; confirmed zero user data persistence; authored SECURITY.md; verified memoized detection and module-level regexes.*
 
+## Prompt 13
+```
+Final small fixes. Do not change any behaviour or design.
+
+1. Chrome reports "A form field element should have an id or name attribute". Give every input, select, textarea and checkbox in the app a unique id and a name, and make sure each label's htmlFor matches its id.
+2. Add public/robots.txt (User-agent: * / Allow: /) and make sure index.html has a meta description, theme-color and a favicon. Do NOT loosen the Content-Security-Policy: keep connect-src 'none'.
+3. In the README, add a "Lighthouse" section: Performance 100, Accessibility 100, Best Practices 100, SEO 91, and explain that the SEO robots.txt check fails only because the strict CSP (connect-src 'none') blocks all network requests by design, which is the core privacy guarantee.
+4. Add a GitHub Actions workflow at .github/workflows/ci.yml that runs on push and pull_request to main: checkout, setup Node 20 with npm cache, npm ci, npm run lint, npm test, npm run build.
+
+Run `npm run lint`, `npm test` and `npm run build`, update PROMPT_LOG.md, commit to main and push.
+```
+*Note: Configured unique id and name attributes along with matching htmlFor associations on all inputs, selects, textareas, and checkboxes; added public/robots.txt and public/favicon.svg, updated index.html with theme-color and favicon links while preserving strict connect-src 'none' CSP; added Lighthouse scores (Perf 100, A11y 100, BP 100, SEO 91) to README with CSP privacy explanation; created GitHub Actions CI workflow in .github/workflows/ci.yml.*
+
+
 
 
 

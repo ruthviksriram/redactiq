@@ -190,8 +190,13 @@ export default function InputSection({ text, onTextChange, fileName, onFileNameC
             </svg>
             Upload File
           </button>
+          <label htmlFor="file-upload-input" className="visually-hidden">
+            Upload file (.txt or .csv)
+          </label>
           <input
             ref={fileInputRef}
+            id="file-upload-input"
+            name="file-upload-input"
             type="file"
             accept=".txt,.csv"
             onChange={handleFileInputChange}
@@ -265,6 +270,7 @@ export default function InputSection({ text, onTextChange, fileName, onFileNameC
         </label>
         <textarea
           id="raw-text-input"
+          name="raw-text-input"
           className="text-input-area"
           value={text}
           onChange={(e) => {

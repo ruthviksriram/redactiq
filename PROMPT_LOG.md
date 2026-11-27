@@ -116,5 +116,41 @@ Then start Phase 3 only: build ControlsBar.jsx (3 redaction modes + entity type 
 ```
 *Note: Starting Phase 3 - updated footer copy, building ControlsBar, SummaryBar, safe HighlightedText, and AuditView side-by-side, wiring into App.jsx with useMemo, and automated multi-mode browser testing with screenshots.*
 
+## Prompt 5
+```
+Phase 3 looks good. Before Phase 4, do a full visual redesign. Do not change any logic, detection, or tests — only styles and presentational markup.
+
+STYLE: Premium, modern product UI (think Vercel / Linear / Stripe quality) with TWO themes:
+- Premium Dark (default): near-black background (#0a0a0f style) with a subtle radial gradient glow behind the header, glassy cards (semi-transparent background, backdrop-filter blur, 1px soft border, large soft shadows)
+- Premium Light: off-white background, white cards with soft layered shadows, same accent colour
+- Theme toggle button in the header (sun/moon icon, aria-label, aria-pressed). Default to the user's system preference (prefers-color-scheme) and remember the choice in localStorage (wrapped in try/catch).
+- Implement both themes with CSS custom properties on [data-theme], so every colour comes from variables.
+
+BUTTONS (3D + hover):
+- 3D look: subtle top highlight, gradient fill, layered box-shadows that create depth
+- Hover: lift up (translateY(-2px)), stronger shadow and a soft accent glow
+- Active/pressed: press down (translateY(1px)) with an inset shadow
+- Primary buttons (Load Sample, Download) use the accent gradient; secondary buttons are glassy
+- Smooth transitions (150-200 ms)
+
+OTHER POLISH:
+- Cards lift slightly on hover; mode selector as a segmented control with a sliding active pill
+- Entity toggles as pill chips with their entity colour
+- Consistent spacing scale, rounded corners (12-16px), refined typography with system fonts (no external fonts — CSP blocks them)
+- Count badges with subtle colour backgrounds
+
+MUST KEEP (scored):
+- Text contrast at least 4.5:1 in BOTH themes, including highlight labels
+- Visible focus rings on every interactive element in both themes
+- Respect prefers-reduced-motion: disable lift/glow animations when it is set
+- Responsive layout still stacks on mobile
+
+Also: the editor shows 3 problems in src/App.jsx (see the Problems tab). Fix all of them without changing behaviour, and make sure the Problems tab shows 0 problems for the whole project.
+
+Test both themes in the browser, check hover/focus states, run `npm test`, `npm run lint` and `npm run build`, then commit to main and stop. Show me screenshots of both themes, including one scrolled down to the side-by-side Original/Sanitized panels.
+```
+*Note: Completed full visual redesign with Vercel/Stripe quality dual themes (Premium Dark & Premium Light), 3D tactile buttons, glassy cards, radial header glow, segmented controls, zero-diagnostics cleanup in jsconfig.json and App.jsx, and automated browser capture.*
+
+
 
 

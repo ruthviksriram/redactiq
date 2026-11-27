@@ -36,7 +36,9 @@ describe('RedactIQ Component Flows & User Interactions', () => {
   it('Flow 1: clicking "Load Sample" populates input and updates detection counts', async () => {
     render(<App />);
 
-    const loadSampleBtn = screen.getByRole('button', { name: /load pre-built realistic noisy sample/i });
+    const loadSampleBtn = screen.getByRole('button', {
+      name: /load pre-built realistic noisy sample/i,
+    });
     expect(loadSampleBtn).toBeDefined();
 
     await act(async () => {
@@ -58,7 +60,9 @@ describe('RedactIQ Component Flows & User Interactions', () => {
     render(<App />);
 
     // Load sample
-    const loadSampleBtn = screen.getByRole('button', { name: /load pre-built realistic noisy sample/i });
+    const loadSampleBtn = screen.getByRole('button', {
+      name: /load pre-built realistic noisy sample/i,
+    });
     await act(async () => {
       fireEvent.click(loadSampleBtn);
       await new Promise((r) => setTimeout(r, 350));
@@ -87,7 +91,9 @@ describe('RedactIQ Component Flows & User Interactions', () => {
     render(<App />);
 
     // Load sample
-    const loadSampleBtn = screen.getByRole('button', { name: /load pre-built realistic noisy sample/i });
+    const loadSampleBtn = screen.getByRole('button', {
+      name: /load pre-built realistic noisy sample/i,
+    });
     await act(async () => {
       fireEvent.click(loadSampleBtn);
       await new Promise((r) => setTimeout(r, 350));
@@ -123,7 +129,9 @@ describe('RedactIQ Component Flows & User Interactions', () => {
     });
 
     const errorAlert = screen.getByRole('alert');
-    expect(errorAlert.textContent).toContain('Unsupported file format. Please upload a .txt or .csv file.');
+    expect(errorAlert.textContent).toContain(
+      'Unsupported file format. Please upload a .txt or .csv file.'
+    );
   });
 
   it('Flow 5: exported text contains zero UI badges, tags, or unverified type labels', () => {

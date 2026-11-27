@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * Visual privacy risk exposure gauge and assessment summary component.
@@ -41,7 +42,9 @@ export default function RiskMeter({ riskScore, riskSummary }) {
     <div className="risk-meter-wrapper" aria-label="Privacy Risk Meter">
       <div className="risk-meter-header">
         <div className="risk-meter-title-row">
-          <span className="risk-meter-icon" aria-hidden="true">🛡️</span>
+          <span className="risk-meter-icon" aria-hidden="true">
+            🛡️
+          </span>
           <div>
             <span className="risk-meter-label">Privacy Risk Exposure</span>
             <div className="risk-score-badge-row">
@@ -92,3 +95,21 @@ export default function RiskMeter({ riskScore, riskSummary }) {
     </div>
   );
 }
+
+RiskMeter.propTypes = {
+  riskScore: PropTypes.shape({
+    score: PropTypes.number,
+    level: PropTypes.string,
+    activeCount: PropTypes.number,
+  }),
+  riskSummary: PropTypes.shape({
+    title: PropTypes.string,
+    details: PropTypes.string,
+    recommendation: PropTypes.string,
+  }),
+};
+
+RiskMeter.defaultProps = {
+  riskScore: null,
+  riskSummary: null,
+};

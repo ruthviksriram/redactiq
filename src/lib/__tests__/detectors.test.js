@@ -5,7 +5,9 @@ import { ENTITY_TYPES } from '../constants.js';
 describe('detectors.js', () => {
   describe('normalizeEntity', () => {
     it('normalizes emails to lowercase', () => {
-      expect(normalizeEntity(ENTITY_TYPES.EMAIL, 'User.Name@Domain.COM')).toBe('user.name@domain.com');
+      expect(normalizeEntity(ENTITY_TYPES.EMAIL, 'User.Name@Domain.COM')).toBe(
+        'user.name@domain.com'
+      );
     });
 
     it('normalizes PAN to uppercase', () => {
@@ -20,7 +22,9 @@ describe('detectors.js', () => {
     });
 
     it('normalizes cards and Aadhaar to digits only', () => {
-      expect(normalizeEntity(ENTITY_TYPES.CREDIT_CARD, '4111-1111-1111-1111')).toBe('4111111111111111');
+      expect(normalizeEntity(ENTITY_TYPES.CREDIT_CARD, '4111-1111-1111-1111')).toBe(
+        '4111111111111111'
+      );
       expect(normalizeEntity(ENTITY_TYPES.AADHAAR, '2345 6789 0124')).toBe('234567890124');
     });
   });
@@ -49,8 +53,8 @@ describe('detectors.js', () => {
       const text = 'Valid: 192.168.1.1 and 10.0.0.1. Invalid: 999.1.1.1 and 256.0.0.1.';
       const res = detectEntities(text);
       expect(res.matches).toHaveLength(2);
-      expect(res.matches.every(m => m.type === ENTITY_TYPES.IP)).toBe(true);
-      expect(res.matches.map(m => m.value)).toEqual(['192.168.1.1', '10.0.0.1']);
+      expect(res.matches.every((m) => m.type === ENTITY_TYPES.IP)).toBe(true);
+      expect(res.matches.map((m) => m.value)).toEqual(['192.168.1.1', '10.0.0.1']);
     });
 
     it('detects valid PAN and ignores invalid 4th letter', () => {
@@ -126,8 +130,20 @@ describe('detectors.js', () => {
 
     it('resolveOverlaps prioritizes longer and higher priority types', () => {
       const candidates = [
-        { type: ENTITY_TYPES.PHONE, value: '9876543210', start: 0, end: 10, normalized: '9876543210' },
-        { type: ENTITY_TYPES.AADHAAR, value: '2345 6789 0124', start: 0, end: 14, normalized: '234567890124' },
+        {
+          type: ENTITY_TYPES.PHONE,
+          value: '9876543210',
+          start: 0,
+          end: 10,
+          normalized: '9876543210',
+        },
+        {
+          type: ENTITY_TYPES.AADHAAR,
+          value: '2345 6789 0124',
+          start: 0,
+          end: 14,
+          normalized: '234567890124',
+        },
       ];
       const resolved = resolveOverlaps(candidates);
       expect(resolved).toHaveLength(1);

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * @file ErrorBoundary component providing a graceful, privacy-respecting fallback UI
@@ -68,7 +69,16 @@ export default class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="app-shell" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+        <div
+          className="app-shell"
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '2rem',
+          }}
+        >
           <div
             className="tilt-card"
             style={{
@@ -87,11 +97,26 @@ export default class ErrorBoundary extends React.Component {
             <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }} aria-hidden="true">
               🛡️
             </div>
-            <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '0.75rem' }}>
+            <h1
+              style={{
+                fontSize: '1.4rem',
+                fontWeight: 700,
+                color: 'var(--text-heading)',
+                marginBottom: '0.75rem',
+              }}
+            >
               Something went wrong
             </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1.75rem' }}>
-              An unexpected client-side error occurred. Your raw text and sensitive data remain strictly in your local browser memory and were not leaked.
+            <p
+              style={{
+                color: 'var(--text-secondary)',
+                fontSize: '0.9rem',
+                lineHeight: 1.6,
+                marginBottom: '1.75rem',
+              }}
+            >
+              An unexpected client-side error occurred. Your raw text and sensitive data remain
+              strictly in your local browser memory and were not leaked.
             </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
               <button
@@ -119,3 +144,7 @@ export default class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
+
+ErrorBoundary.propTypes = {
+  children: PropTypes.node.isRequired,
+};

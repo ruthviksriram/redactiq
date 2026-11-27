@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ENTITY_TYPES, ENTITY_METADATA } from '../lib/constants.js';
 import RiskMeter from './RiskMeter.jsx';
 
@@ -9,11 +10,13 @@ import RiskMeter from './RiskMeter.jsx';
  * @param {Object} props
  * @param {import('../lib/detectors.js').DetectedEntity[]} props.matches - Valid detected entities.
  * @param {number} props.luhnFailedCount - Count of card-like sequences failing Luhn.
+ * @param {number} [props.verhoeffFailedCount=0] - Count of Aadhaar-like numbers failing Verhoeff checksum.
  * @param {Object.<string, boolean>} props.enabledTypes - Map of enabled types.
  * @param {number} [props.excludedCount=0] - Count of items excluded by "Don't redact".
  * @param {{ score: number, level: string, activeCount: number }} [props.riskScore] - Risk score object.
  * @param {{ title: string, details: string, recommendation: string }} [props.riskSummary] - Risk summary object.
  * @param {Array<{ id: string, name: string, description: string, color: string }>} [props.complianceTags] - Compliance tags.
+ * @param {boolean} [props.strictChecksum=true] - Whether strict checksum validation is enabled.
  * @returns {React.ReactElement} The SummaryBar component.
  */
 export default function SummaryBar({
@@ -88,9 +91,7 @@ export default function SummaryBar({
                   ></span>
                   <span className="stat-name">{meta.label}</span>
                 </div>
-                <div className="stat-card-count">
-                  {isEnabled ? count : 'Off'}
-                </div>
+                <div className="stat-card-count">{isEnabled ? count : 'Off'}</div>
               </div>
             );
           })}
@@ -98,9 +99,7 @@ export default function SummaryBar({
       </div>
 
       {/* Risk Exposure Meter & Guidance */}
-      {riskScore && (
-        <RiskMeter riskScore={riskScore} riskSummary={riskSummary} />
-      )}
+      {riskScore && <RiskMeter riskScore={riskScore} riskSummary={riskSummary} />}
 
       {/* Regulatory Compliance Frameworks */}
       {complianceTags.length > 0 && (
@@ -152,19 +151,23 @@ export default function SummaryBar({
         {strictChecksum ? (
           <>
             <span className="luhn-note-highlight">
-              Checksum-failed numbers ignored: {luhnFailedCount} cards (Luhn), {verhoeffFailedCount} Aadhaar-like (Verhoeff)
+              Checksum-failed numbers ignored: {luhnFailedCount} cards (Luhn), {verhoeffFailedCount}{' '}
+              Aadhaar-like (Verhoeff)
             </span>
             <span className="luhn-note-detail">
-              (Numbers matching card or Aadhaar patterns that fail checksum algorithms are excluded to prevent false positives. Turn off strict validation to redact them anyway.)
+              (Numbers matching card or Aadhaar patterns that fail checksum algorithms are excluded
+              to prevent false positives. Turn off strict validation to redact them anyway.)
             </span>
           </>
         ) : (
           <>
             <span className="luhn-note-highlight">
-              Strict checksum validation off: {luhnFailedCount} cards (Luhn), {verhoeffFailedCount} Aadhaar-like (Verhoeff) detected and redacted as unverified
+              Strict checksum validation off: {luhnFailedCount} cards (Luhn), {verhoeffFailedCount}{' '}
+              Aadhaar-like (Verhoeff) detected and redacted as unverified
             </span>
             <span className="luhn-note-detail">
-              (Maximum caution active: numbers matching card or Aadhaar formats are redacted even if checksum validation fails.)
+              (Maximum caution active: numbers matching card or Aadhaar formats are redacted even if
+              checksum validation fails.)
             </span>
           </>
         )}
@@ -172,3 +175,49 @@ export default function SummaryBar({
     </section>
   );
 }
+
+SummaryBar.propTypes = {
+  matches: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.string.isRequired,
+      value: PropTypes.string.isRequired,
+      start: PropTypes.number.isRequired,
+      end: PropTypes.number.isRequired,
+      normalized: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  luhnFailedCount: PropTypes.number,
+  verhoeffFailedCount: PropTypes.number,
+  enabledTypes: PropTypes.objectOf(PropTypes.bool),
+  excludedCount: PropTypes.number,
+  riskScore: PropTypes.shape({
+    score: PropTypes.number.isRequired,
+    level: PropTypes.string.isRequired,
+    activeCount: PropTypes.number.isRequired,
+  }),
+  riskSummary: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    details: PropTypes.string.isRequired,
+    recommendation: PropTypes.string.isRequired,
+  }),
+  complianceTags: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      description: PropTypes.string.isRequired,
+      color: PropTypes.string.isRequired,
+    })
+  ),
+  strictChecksum: PropTypes.bool,
+};
+
+SummaryBar.defaultProps = {
+  luhnFailedCount: 0,
+  verhoeffFailedCount: 0,
+  enabledTypes: {},
+  excludedCount: 0,
+  riskScore: null,
+  riskSummary: null,
+  complianceTags: [],
+  strictChecksum: true,
+};

@@ -1,4 +1,24 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+
+/**
+ * Validates a custom rule pattern.
+ *
+ * @param {string} pattern - Input pattern or keyword.
+ * @param {boolean} isRegex - Whether the pattern is a regular expression.
+ * @returns {string|null} Error message if invalid, or null if valid.
+ */
+function validatePattern(pattern, isRegex) {
+  if (!isRegex || !pattern.trim()) {
+    return null;
+  }
+  try {
+    new RegExp(pattern.trim(), 'gi');
+    return null;
+  } catch (err) {
+    return err instanceof Error ? err.message : 'Invalid regex pattern';
+  }
+}
 
 /**
  * Custom rules management component allowing users to define keywords or regex patterns.
@@ -16,30 +36,12 @@ export default function CustomRulesSection({ rules = [], onRulesChange }) {
   const handlePatternChange = (e) => {
     const val = e.target.value;
     setPatternInput(val);
-    if (isRegex && val.trim()) {
-      try {
-        new RegExp(val.trim(), 'gi');
-        setRegexError(null);
-      } catch (err) {
-        setRegexError(err instanceof Error ? err.message : 'Invalid regex pattern');
-      }
-    } else {
-      setRegexError(null);
-    }
+    setRegexError(validatePattern(val, isRegex));
   };
 
   const handleToggleIsRegex = (targetIsRegex) => {
     setIsRegex(targetIsRegex);
-    if (targetIsRegex && patternInput.trim()) {
-      try {
-        new RegExp(patternInput.trim(), 'gi');
-        setRegexError(null);
-      } catch (err) {
-        setRegexError(err instanceof Error ? err.message : 'Invalid regex pattern');
-      }
-    } else {
-      setRegexError(null);
-    }
+    setRegexError(validatePattern(patternInput, targetIsRegex));
   };
 
   const handleAddRule = (e) => {
@@ -75,11 +77,14 @@ export default function CustomRulesSection({ rules = [], onRulesChange }) {
     <div className="custom-rules-card card-3d" aria-label="Custom Pattern Rules">
       <div className="custom-rules-header">
         <div className="custom-rules-title-group">
-          <span className="custom-rules-icon" aria-hidden="true">⚙️</span>
+          <span className="custom-rules-icon" aria-hidden="true">
+            ⚙️
+          </span>
           <div>
             <h3 className="custom-rules-title">Custom Detection Rules</h3>
             <p className="custom-rules-subtitle">
-              Add proprietary terms, project code names, or custom regex patterns to detect and mask as custom entities.
+              Add proprietary terms, project code names, or custom regex patterns to detect and mask
+              as custom entities.
             </p>
           </div>
         </div>
@@ -150,9 +155,7 @@ export default function CustomRulesSection({ rules = [], onRulesChange }) {
           <div className="active-rules-chips">
             {rules.map((rule) => (
               <div key={rule.id} className="rule-chip">
-                <span className="rule-type-tag">
-                  {rule.isRegex ? 'REGEX' : 'KEYWORD'}
-                </span>
+                <span className="rule-type-tag">{rule.isRegex ? 'REGEX' : 'KEYWORD'}</span>
                 <code className="rule-pattern-code">{rule.pattern}</code>
                 <button
                   type="button"
@@ -170,3 +173,18 @@ export default function CustomRulesSection({ rules = [], onRulesChange }) {
     </div>
   );
 }
+
+CustomRulesSection.propTypes = {
+  rules: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      pattern: PropTypes.string.isRequired,
+      isRegex: PropTypes.bool.isRequired,
+    })
+  ),
+  onRulesChange: PropTypes.func.isRequired,
+};
+
+CustomRulesSection.defaultProps = {
+  rules: [],
+};

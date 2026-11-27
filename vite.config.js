@@ -9,9 +9,10 @@ const cspPlugin = () => ({
   name: 'html-csp-transform',
   apply: 'build',
   transformIndexHtml(html) {
-    const cspMeta = '<meta http-equiv="Content-Security-Policy" content="default-src \'self\'; connect-src \'none\'; style-src \'self\' \'unsafe-inline\'; script-src \'self\'; img-src \'self\' data:;">';
+    const cspMeta =
+      "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; connect-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;\">";
     return html.replace('</head>', `  ${cspMeta}\n  </head>`);
-  }
+  },
 });
 
 export default defineConfig({

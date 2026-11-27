@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { sanitizeFileName } from '../lib/validators.js';
 import { DEFAULT_OUTPUT_FILENAME } from '../lib/constants.js';
 
@@ -11,13 +12,10 @@ import { DEFAULT_OUTPUT_FILENAME } from '../lib/constants.js';
  * @param {object} props
  * @param {string} props.sanitizedText - Plain sanitized text from redaction engine.
  * @param {string} [props.fileName] - Original uploaded filename if any.
+ * @param {object} [props.auditReportData] - Structured audit report data object.
  * @returns {React.JSX.Element}
  */
-export default function ExportBar({
-  sanitizedText,
-  fileName = '',
-  auditReportData,
-}) {
+export default function ExportBar({ sanitizedText, fileName = '', auditReportData }) {
   const [copied, setCopied] = useState(false);
 
   const hasContent = Boolean(sanitizedText && sanitizedText.trim().length > 0);
@@ -35,9 +33,7 @@ export default function ExportBar({
   const handleDownload = () => {
     if (!hasContent) return;
 
-    const mimeType = isCsv
-      ? 'text/csv;charset=utf-8'
-      : 'text/plain;charset=utf-8';
+    const mimeType = isCsv ? 'text/csv;charset=utf-8' : 'text/plain;charset=utf-8';
 
     const blob = new Blob([sanitizedText], { type: mimeType });
     const url = URL.createObjectURL(blob);
@@ -126,7 +122,8 @@ export default function ExportBar({
           <div>
             <h2 className="export-title">Export Sanitized Output</h2>
             <p className="export-subtitle">
-              Pure redacted text only &mdash; entity badges, labels, and original sensitive mappings are never included in exports.
+              Pure redacted text only &mdash; entity badges, labels, and original sensitive mappings
+              are never included in exports.
             </p>
           </div>
         </div>
@@ -146,7 +143,17 @@ export default function ExportBar({
             className="btn btn-3d btn-secondary report-btn"
             aria-label="Download zero-PII privacy and compliance audit report in JSON format"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
               <line x1="16" y1="13" x2="8" y2="13" />
@@ -166,14 +173,34 @@ export default function ExportBar({
         >
           {copied ? (
             <>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
                 <polyline points="20 6 9 17 4 12" />
               </svg>
               <span>Copied!</span>
             </>
           ) : (
             <>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
               </svg>
@@ -189,7 +216,17 @@ export default function ExportBar({
           className="btn btn-3d btn-primary download-btn"
           aria-label={`Download sanitized file as ${exportFileName}`}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
@@ -200,3 +237,14 @@ export default function ExportBar({
     </section>
   );
 }
+
+ExportBar.propTypes = {
+  sanitizedText: PropTypes.string.isRequired,
+  fileName: PropTypes.string,
+  auditReportData: PropTypes.object,
+};
+
+ExportBar.defaultProps = {
+  fileName: '',
+  auditReportData: null,
+};

@@ -43,12 +43,12 @@ TXN-1002,support@acme-corp.com,+91 98765 43210,2345 6789 0124,12850.50
  * Expected counts for each entity type in SAMPLE_TEXT.
  */
 export const SAMPLE_EXPECTED_COUNTS = {
-  EMAIL: 6,        // priya.sharma@payflow.in (3 times), support@acme-corp.com (3 times)
-  PHONE: 7,        // +91 98765 43210 (2), 09876543210 (1), +1 555-123-4567 (1), 9876543210 (2), +91-91234-56789 (1)
-  IP: 3,           // 192.168.1.105, 10.0.4.12, 2001:0db8:85a3:0000:0000:8a2e:0370:7334
-  PAN: 2,          // AAAPL1234C, BKRPK5678M
-  AADHAAR: 3,      // 2345 6789 0124 (2 times), 9876 5432 1096 (1 time)
-  CREDIT_CARD: 2,  // 4111 1111 1111 1111, 5500 0000 0000 0004
-  LUHN_FAILED: 1,  // 1234 5678 9012 3456 (fails Luhn)
+  EMAIL: 6, // priya.sharma@payflow.in (3 times), support@acme-corp.com (3 times)
+  PHONE: 7, // +91 98765 43210 (2), 09876543210 (1), +1 555-123-4567 (1), 9876543210 (2), +91-91234-56789 (1)
+  IP: 3, // 192.168.1.105, 10.0.4.12, 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+  PAN: 2, // AAAPL1234C, BKRPK5678M
+  AADHAAR: 3, // 2345 6789 0124 (2 times), 9876 5432 1096 (1 time)
+  CREDIT_CARD: 2, // 4111 1111 1111 1111, 5500 0000 0000 0004
+  LUHN_FAILED: 1, // 1234 5678 9012 3456 (fails Luhn)
   VERHOEFF_FAILED: 1, // 2345 6789 0125 (fails Verhoeff)
 };

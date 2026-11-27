@@ -3,7 +3,12 @@
  * Zero external calls, zero telemetry, purely deterministic mathematical scoring.
  */
 
-import { ENTITY_TYPES, ENTITY_WEIGHTS, REDACTION_MODES } from './constants.js';
+import {
+  ENTITY_TYPES,
+  ENTITY_WEIGHTS,
+  REDACTION_MODES,
+  RISK_LEVEL_THRESHOLDS,
+} from './constants.js';
 
 /**
  * Calculates a 0-100 privacy risk exposure score and risk level.
@@ -49,11 +54,11 @@ export function calculateRiskScore(matches = [], overrides = {}, enabledTypes = 
   const score = Math.min(100, Math.max(0, Math.round(totalScore)));
 
   let level = 'Low';
-  if (score >= 80) {
+  if (score >= RISK_LEVEL_THRESHOLDS.CRITICAL) {
     level = 'Critical';
-  } else if (score >= 50) {
+  } else if (score >= RISK_LEVEL_THRESHOLDS.HIGH) {
     level = 'High';
-  } else if (score >= 20) {
+  } else if (score >= RISK_LEVEL_THRESHOLDS.MEDIUM) {
     level = 'Medium';
   } else {
     level = 'Low';
@@ -102,15 +107,18 @@ export function generateRiskSummary(
   }
 
   const typesPresent = [...new Set(matches.map((m) => m.type))];
-  const hasFinancial = typesPresent.includes(ENTITY_TYPES.CREDIT_CARD) || typesPresent.includes(ENTITY_TYPES.PAN);
+  const hasFinancial =
+    typesPresent.includes(ENTITY_TYPES.CREDIT_CARD) || typesPresent.includes(ENTITY_TYPES.PAN);
   const hasNationalId = typesPresent.includes(ENTITY_TYPES.AADHAAR);
-  const hasContact = typesPresent.includes(ENTITY_TYPES.EMAIL) || typesPresent.includes(ENTITY_TYPES.PHONE);
+  const hasContact =
+    typesPresent.includes(ENTITY_TYPES.EMAIL) || typesPresent.includes(ENTITY_TYPES.PHONE);
 
   let recommendation = 'Consistent Pseudonymization';
   if (level === 'Critical' || hasFinancial) {
     recommendation = 'Full Mask ([REDACTED]) to eliminate all payment & financial liabilities';
   } else if (level === 'High' || hasNationalId) {
-    recommendation = 'Consistent Pseudonymization (safely masks citizen IDs while retaining correlation)';
+    recommendation =
+      'Consistent Pseudonymization (safely masks citizen IDs while retaining correlation)';
   } else if (mode === REDACTION_MODES.CUSTOM) {
     recommendation = 'Custom per-type strategy active';
   } else {

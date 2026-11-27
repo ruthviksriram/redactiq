@@ -1,5 +1,11 @@
 import React from 'react';
-import { ENTITY_TYPES, ENTITY_METADATA, REDACTION_MODES, DEFAULT_CUSTOM_TYPE_MODES } from '../lib/constants.js';
+import PropTypes from 'prop-types';
+import {
+  ENTITY_TYPES,
+  ENTITY_METADATA,
+  REDACTION_MODES,
+  DEFAULT_CUSTOM_TYPE_MODES,
+} from '../lib/constants.js';
 
 /**
  * Controls bar component allowing selection of redaction mode and
@@ -12,6 +18,8 @@ import { ENTITY_TYPES, ENTITY_METADATA, REDACTION_MODES, DEFAULT_CUSTOM_TYPE_MOD
  * @param {function(string, string): void} [props.onTypeModeChange] - Per-type mode change callback.
  * @param {Object.<string, boolean>} props.enabledTypes - Map of enabled entity types.
  * @param {function(string): void} props.onToggleType - Toggle entity type callback.
+ * @param {boolean} [props.strictChecksum=true] - Whether strict checksum validation is enabled.
+ * @param {function(boolean): void} [props.onStrictChecksumChange] - Strict checksum toggle callback.
  * @returns {React.ReactElement} The ControlsBar component.
  */
 export default function ControlsBar({
@@ -88,19 +96,25 @@ export default function ControlsBar({
           <div className="custom-panel-header">
             <span className="custom-panel-title">Per-Entity Redaction Strategy</span>
             <span className="custom-panel-desc">
-              Define granular default masking rules per entity type. You can still override individual items in the audit view.
+              Define granular default masking rules per entity type. You can still override
+              individual items in the audit view.
             </span>
           </div>
           <div className="custom-type-grid">
             {Object.values(ENTITY_TYPES).map((type) => {
               const meta = ENTITY_METADATA[type];
-              const currentTypeMode = typeModes[type] || DEFAULT_CUSTOM_TYPE_MODES[type] || REDACTION_MODES.FULL;
+              const currentTypeMode =
+                typeModes[type] || DEFAULT_CUSTOM_TYPE_MODES[type] || REDACTION_MODES.FULL;
               const selectId = `custom-select-${type.toLowerCase()}`;
 
               return (
                 <div key={type} className="custom-type-field">
                   <label htmlFor={selectId} className="custom-type-label">
-                    <span className="custom-type-dot" style={{ backgroundColor: meta.badgeColor }} aria-hidden="true" />
+                    <span
+                      className="custom-type-dot"
+                      style={{ backgroundColor: meta.badgeColor }}
+                      aria-hidden="true"
+                    />
                     <span>{meta.label}</span>
                   </label>
                   <select
@@ -126,11 +140,7 @@ export default function ControlsBar({
         <span className="control-group-label" id="entities-group-label">
           Entity Detection Filters
         </span>
-        <div
-          className="entity-checkboxes"
-          role="group"
-          aria-labelledby="entities-group-label"
-        >
+        <div className="entity-checkboxes" role="group" aria-labelledby="entities-group-label">
           {Object.values(ENTITY_TYPES).map((type) => {
             const meta = ENTITY_METADATA[type];
             const isChecked = enabledTypes[type] !== false;
@@ -196,7 +206,8 @@ export default function ControlsBar({
           <div className="strict-toggle-labels">
             <span className="strict-toggle-title">Strict checksum validation</span>
             <span id="strict-checksum-desc" className="strict-toggle-description">
-              Verify payment cards via Luhn and Aadhaar via Verhoeff. Turn off to detect &amp; redact unverified pattern matches.
+              Verify payment cards via Luhn and Aadhaar via Verhoeff. Turn off to detect &amp;
+              redact unverified pattern matches.
             </span>
           </div>
         </label>
@@ -204,3 +215,21 @@ export default function ControlsBar({
     </section>
   );
 }
+
+ControlsBar.propTypes = {
+  mode: PropTypes.string.isRequired,
+  onModeChange: PropTypes.func.isRequired,
+  typeModes: PropTypes.objectOf(PropTypes.string),
+  onTypeModeChange: PropTypes.func,
+  enabledTypes: PropTypes.objectOf(PropTypes.bool).isRequired,
+  onToggleType: PropTypes.func.isRequired,
+  strictChecksum: PropTypes.bool,
+  onStrictChecksumChange: PropTypes.func,
+};
+
+ControlsBar.defaultProps = {
+  typeModes: DEFAULT_CUSTOM_TYPE_MODES,
+  onTypeModeChange: null,
+  strictChecksum: true,
+  onStrictChecksumChange: null,
+};

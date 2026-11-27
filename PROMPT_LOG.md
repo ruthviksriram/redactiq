@@ -1,6 +1,7 @@
 # Prompt Log
 
 ## Prompt 1
+
 ```
 ROLE
 You are a senior security engineer and frontend developer. Build a hackathon MVP that must work perfectly in a live demo. It is scored automatically on: code quality, security, efficiency, testing, accessibility, problem-statement alignment and Google services usage. Optimise for all of them.
@@ -89,9 +90,11 @@ PROCESS (follow strictly)
    Phase 4: export, mapping table, polish, accessibility, Dockerfile, nginx.conf, README
 3. After every phase, run the app in the browser, test it, fix any console errors, run `npm run build` once to confirm the production build works, then commit.
 ```
-*Note: Created .gitignore, initialized PROMPT_LOG.md, and drafted detailed implementation plan for user review.*
+
+_Note: Created .gitignore, initialized PROMPT_LOG.md, and drafted detailed implementation plan for user review._
 
 ## Prompt 2
+
 ```
 Approved, with these changes:
 1. Do NOT put the CSP meta tag directly in index.html. Add it only at build time with a small Vite plugin (transformIndexHtml with apply: 'build'), plus the nginx header. The dev server must have no CSP.
@@ -100,23 +103,29 @@ Approved, with these changes:
 
 Start Phase 1 only: set up the Vite + React project, then build constants.js, validators.js, detectors.js, redact.js, sampleData.js and the unit tests. Run `npm test` and `npm run lint`, make sure both pass, commit to main and stop. Show me the test results.
 ```
-*Note: Starting Phase 1 - setting up Vite + React + Vitest + ESLint, building constants, validators, detectors, redaction, sampleData, and unit tests.*
+
+_Note: Starting Phase 1 - setting up Vite + React + Vitest + ESLint, building constants, validators, detectors, redaction, sampleData, and unit tests._
 
 ## Prompt 3
+
 ```
 Phase 1 looks good. Start Phase 2 only: build Header.jsx and InputSection.jsx (textarea, .txt/.csv upload with drag-and-drop and file-type check, 5 MB warning, and the "Load sample" button using sampleData.js). Wire them into App.jsx with the 200 ms debounce. Run the app, open it in the browser, test pasting, uploading and the sample button, fix any console errors, run `npm run build`, then commit to main and stop. Show me a screenshot of the app.
 ```
-*Note: Starting Phase 2 - implementing Header.jsx, InputSection.jsx, drag-and-drop file upload with validation, 5MB warning, sample loader, 200ms debounce in App.jsx, and browser testing.*
+
+_Note: Starting Phase 2 - implementing Header.jsx, InputSection.jsx, drag-and-drop file upload with validation, 5MB warning, sample loader, 200ms debounce in App.jsx, and browser testing._
 
 ## Prompt 4
+
 ```
 Phase 2 looks good. One fix first: change the footer text "Encrypted only in local RAM · No cloud calls" to "Processed locally in your browser · No network calls", because the data is not actually encrypted.
 
 Then start Phase 3 only: build ControlsBar.jsx (3 redaction modes + entity type toggles), SummaryBar.jsx (count per entity type, total, aria-live, and "Luhn-failed numbers ignored: N"), HighlightedText.jsx and AuditView.jsx (side-by-side original vs sanitized, with type labels on highlights). Wire everything into App.jsx using useMemo. Test all 3 modes and the toggles in the browser with the sample, check that the same email or phone always gets the same placeholder in pseudonymization mode, fix any console errors, run `npm test` and `npm run build`, then commit to main and stop. Show me screenshots of each mode.
 ```
-*Note: Starting Phase 3 - updated footer copy, building ControlsBar, SummaryBar, safe HighlightedText, and AuditView side-by-side, wiring into App.jsx with useMemo, and automated multi-mode browser testing with screenshots.*
+
+_Note: Starting Phase 3 - updated footer copy, building ControlsBar, SummaryBar, safe HighlightedText, and AuditView side-by-side, wiring into App.jsx with useMemo, and automated multi-mode browser testing with screenshots._
 
 ## Prompt 5
+
 ```
 Phase 3 looks good. Before Phase 4, do a full visual redesign. Do not change any logic, detection, or tests — only styles and presentational markup.
 
@@ -149,9 +158,11 @@ Also: the editor shows 3 problems in src/App.jsx (see the Problems tab). Fix all
 
 Test both themes in the browser, check hover/focus states, run `npm test`, `npm run lint` and `npm run build`, then commit to main and stop. Show me screenshots of both themes, including one scrolled down to the side-by-side Original/Sanitized panels.
 ```
-*Note: Completed full visual redesign with Vercel/Stripe quality dual themes (Premium Dark & Premium Light), 3D tactile buttons, glassy cards, radial header glow, segmented controls, zero-diagnostics cleanup in jsconfig.json and App.jsx, and automated browser capture.*
+
+_Note: Completed full visual redesign with Vercel/Stripe quality dual themes (Premium Dark & Premium Light), 3D tactile buttons, glassy cards, radial header glow, segmented controls, zero-diagnostics cleanup in jsconfig.json and App.jsx, and automated browser capture._
 
 ## Prompt 6
+
 ```
 Second redesign pass. Do not change any logic, detection or tests — only visuals.
 
@@ -178,15 +189,19 @@ Second redesign pass. Do not change any logic, detection or tests — only visua
 
 Test in the browser, run `npm test`, `npm run lint` and `npm run build`, make sure the Problems tab shows 0, then commit to main and stop. Show me screenshots.
 ```
-*Note: Starting second visual redesign pass - implementing CustomCursor.jsx with requestAnimationFrame easing, 3D card tilt with specular glare, button mouse-follow glow, animated aurora header glow, and staggered section entrance animations.*
+
+_Note: Starting second visual redesign pass - implementing CustomCursor.jsx with requestAnimationFrame easing, 3D card tilt with specular glare, button mouse-follow glow, animated aurora header glow, and staggered section entrance animations._
 
 ## Prompt 7
+
 ```
 Accent gradient: #F97316 -> #F43F5E (orange to rose) in dark mode, #EA580C -> #E11D48 in light mode. Background dark #0A0705 (warm near-black), light #FFF9F5. Change the IP entity highlight colour from orange to teal (#2DD4BF) so it does not clash with the accent. Keep the "100% Client-Side" badge mint green.
 ```
-*Note: Updated color palette: warm near-black background (#0A0705), warm off-white (#FFF9F5), orange-to-rose accent gradients, and changed IP highlight to high-contrast teal (#2DD4BF).*
+
+_Note: Updated color palette: warm near-black background (#0A0705), warm off-white (#FFF9F5), orange-to-rose accent gradients, and changed IP highlight to high-contrast teal (#2DD4BF)._
 
 ## Prompt 8
+
 ```
 Replace the current accent palette (no logic, layout or test changes):
 
@@ -205,9 +220,11 @@ Change the PHONE entity highlight colour to lime (#A3E635) so it does not clash 
 
 Replace every old accent colour with these variables, check contrast in both themes, run `npm test`, `npm run lint` and `npm run build`, then commit to main and stop. Show me screenshots of both themes with the sample loaded.
 ```
-*Note: Updated accent palette: deep navy #050B18 and #F5F9FC, emerald-teal accent gradients (#10B981 -> #14B8A6 / #047857 -> #0F766E), navy headings in light mode, lime phone highlights (#A3E635), and orange IP highlights (#FB923C).*
+
+_Note: Updated accent palette: deep navy #050B18 and #F5F9FC, emerald-teal accent gradients (#10B981 -> #14B8A6 / #047857 -> #0F766E), navy headings in light mode, lime phone highlights (#A3E635), and orange IP highlights (#FB923C)._
 
 ## Prompt 9
+
 ```
 The design is final. Start Phase 4. We deploy on Vercel (primary), with Cloud Run as an alternative.
 
@@ -219,9 +236,11 @@ The design is final. Start Phase 4. We deploy on Vercel (primary), with Cloud Ru
 6. Final pass: test every feature in both themes in the browser, including uploading a .csv file and downloading it, check the Problems tab shows 0 problems, run `npm test`, `npm run lint` and `npm run build`, update PROMPT_LOG.md, then commit to main.
 7. Check that node_modules and dist are NOT tracked by git (`git ls-files | grep -E "node_modules|dist"` must return nothing), then push to origin main. Show me the test results and the git push output.
 ```
-*Note: Completed Phase 4 - implemented ExportBar.jsx, MappingTable.jsx with sensitive data warning, added unit test verifying sanitized exports contain no UI labels, added vercel.json with zero-trust headers, Dockerfile and nginx.conf for Cloud Run, comprehensive README.md, browser tested all features in both themes, verified 0 git tracking of node_modules/dist, and pushed to origin main.*
+
+_Note: Completed Phase 4 - implemented ExportBar.jsx, MappingTable.jsx with sensitive data warning, added unit test verifying sanitized exports contain no UI labels, added vercel.json with zero-trust headers, Dockerfile and nginx.conf for Cloud Run, comprehensive README.md, browser tested all features in both themes, verified 0 git tracking of node_modules/dist, and pushed to origin main._
 
 ## Prompt 10 (Part 1)
+
 ```
 Add these features in two parts. Do not change how the existing 3 modes behave. After Part 1, run tests, commit and push; then do Part 2, run tests, commit and push.
 
@@ -239,9 +258,11 @@ B) Per-item overrides (work in every mode)
 - redact.js accepts { mode, typeModes, overrides }; priority: per-item override > Custom per-type mode > global mode. Reuse the existing mode functions, no duplicated logic; pseudonym numbering stays consistent. Mapping table shows only if something uses Pseudonym. Download and copy follow all overrides. Overrides are in memory only.
 - Unit tests: per-type mode map, a mixed case (email partial, card full, phone pseudonym), override beating type mode, 'none' leaving the original, same value overridden everywhere
 ```
-*Note: Completed Part 1 - implemented 4th redaction mode "Custom" with per-entity selectors in ControlsBar, per-item override popover in AuditView with ARIA menu/menuitemradio, normalized entity grouping, "Reset all overrides" button, exclusion tracking in SummaryBar, memory-only overrides in redact.js with strict precedence, unit tests in redact.test.js, and browser verification in dual themes.*
+
+_Note: Completed Part 1 - implemented 4th redaction mode "Custom" with per-entity selectors in ControlsBar, per-item override popover in AuditView with ARIA menu/menuitemradio, normalized entity grouping, "Reset all overrides" button, exclusion tracking in SummaryBar, memory-only overrides in redact.js with strict precedence, unit tests in redact.test.js, and browser verification in dual themes._
 
 ## Prompt 10 (Part 2)
+
 ```
 PART 2
 C) Risk meter and summary
@@ -258,9 +279,11 @@ D) Extras
 
 For both parts: test in the browser with the sample in both themes, keep the Problems tab at 0, run npm test, npm run lint and npm run build, update PROMPT_LOG.md and the README (document every new feature), commit to main and push. Show me screenshots of Custom mode, the override menu and the risk meter.
 ```
-*Note: Completed Part 2 - built risk.js with 0-100 weighted scoring and plain-English summary generator, RiskMeter.jsx component, regulatory compliance framework badges (PCI-DSS, DPDP, GDPR), CustomRulesSection.jsx for keywords and safe regex patterns, zero-PII JSON audit report downloader in ExportBar.jsx, 13 new unit tests in risk.test.js (61 passing tests total), 0 ESLint errors/warnings, browser verification in dual themes, and pushed to origin main.*
+
+_Note: Completed Part 2 - built risk.js with 0-100 weighted scoring and plain-English summary generator, RiskMeter.jsx component, regulatory compliance framework badges (PCI-DSS, DPDP, GDPR), CustomRulesSection.jsx for keywords and safe regex patterns, zero-PII JSON audit report downloader in ExportBar.jsx, 13 new unit tests in risk.test.js (61 passing tests total), 0 ESLint errors/warnings, browser verification in dual themes, and pushed to origin main._
 
 ## Prompt 11
+
 ```
 Fix these issues. Do not change anything else.
 
@@ -279,9 +302,11 @@ Fix these issues. Do not change anything else.
 
 Run `npm test`, `npm run lint` and `npm run build`, test in the browser in both themes, update PROMPT_LOG.md and the README, commit to main and push.
 ```
-*Note: Completed fixes - set Light theme as initial visit default while preserving toggle and localStorage persistence; added Verhoeff failure tracking (`verhoeffFailedCount`) for 12-digit Aadhaar candidates; added "Strict checksum validation" toggle in ControlsBar with non-strict redaction of pattern-matching cards/Aadhaar labeled as "unverified"; updated summary notice to "Checksum-failed numbers ignored: N cards (Luhn), M Aadhaar-like (Verhoeff)"; updated risk guidance wording to eliminate "Safe to transmit" and include checksum failure advisory; styled "Download audit report (JSON)" button identically to secondary export buttons; replaced 💾 with an SVG line icon; added unit tests in detectors.test.js, sampleData.test.js, and risk.test.js (64 passing tests).*
+
+_Note: Completed fixes - set Light theme as initial visit default while preserving toggle and localStorage persistence; added Verhoeff failure tracking (`verhoeffFailedCount`) for 12-digit Aadhaar candidates; added "Strict checksum validation" toggle in ControlsBar with non-strict redaction of pattern-matching cards/Aadhaar labeled as "unverified"; updated summary notice to "Checksum-failed numbers ignored: N cards (Luhn), M Aadhaar-like (Verhoeff)"; updated risk guidance wording to eliminate "Safe to transmit" and include checksum failure advisory; styled "Download audit report (JSON)" button identically to secondary export buttons; replaced 💾 with an SVG line icon; added unit tests in detectors.test.js, sampleData.test.js, and risk.test.js (64 passing tests)._
 
 ## Prompt 12
+
 ```
 Final code-quality hardening pass for an automated code review (code quality, security, efficiency, testing, accessibility). Do NOT change the UI design or any behaviour. Time limit: about 15 minutes. If any new dependency fails to install or causes errors, skip that item and continue.
 
@@ -306,9 +331,11 @@ Efficiency
 
 Finish: run `npm run lint`, `npm run test:coverage` and `npm run build` (all must pass), test the app in the browser to confirm nothing changed, update PROMPT_LOG.md and add a Testing section with coverage numbers to the README, commit to main and push. Show me the coverage summary and the push output.
 ```
-*Note: Hardening pass completed - added @testing-library/react and jsdom component tests (Flows 1-5); added @vitest/coverage-v8 achieving 98.56% statement & line coverage on src/lib; added comprehensive edge-case tests (empty, whitespace, zero PII, Unicode, 100k-char stress test, filename security); configured eslint-plugin-jsx-a11y with 0 warnings; added JSDoc @param and @returns across all exports; added ErrorBoundary around App; centralized magic numbers into constants.js; implemented sanitizeFileName; confirmed zero user data persistence; authored SECURITY.md; verified memoized detection and module-level regexes.*
+
+_Note: Hardening pass completed - added @testing-library/react and jsdom component tests (Flows 1-5); added @vitest/coverage-v8 achieving 98.56% statement & line coverage on src/lib; added comprehensive edge-case tests (empty, whitespace, zero PII, Unicode, 100k-char stress test, filename security); configured eslint-plugin-jsx-a11y with 0 warnings; added JSDoc @param and @returns across all exports; added ErrorBoundary around App; centralized magic numbers into constants.js; implemented sanitizeFileName; confirmed zero user data persistence; authored SECURITY.md; verified memoized detection and module-level regexes._
 
 ## Prompt 13
+
 ```
 Final small fixes. Do not change any behaviour or design.
 
@@ -319,15 +346,5 @@ Final small fixes. Do not change any behaviour or design.
 
 Run `npm run lint`, `npm test` and `npm run build`, update PROMPT_LOG.md, commit to main and push.
 ```
-*Note: Configured unique id and name attributes along with matching htmlFor associations on all inputs, selects, textareas, and checkboxes; added public/robots.txt and public/favicon.svg, updated index.html with theme-color and favicon links while preserving strict connect-src 'none' CSP; added Lighthouse scores (Perf 100, A11y 100, BP 100, SEO 91) to README with CSP privacy explanation; created GitHub Actions CI workflow in .github/workflows/ci.yml.*
 
-
-
-
-
-
-
-
-
-
-
+_Note: Configured unique id and name attributes along with matching htmlFor associations on all inputs, selects, textareas, and checkboxes; added public/robots.txt and public/favicon.svg, updated index.html with theme-color and favicon links while preserving strict connect-src 'none' CSP; added Lighthouse scores (Perf 100, A11y 100, BP 100, SEO 91) to README with CSP privacy explanation; created GitHub Actions CI workflow in .github/workflows/ci.yml._

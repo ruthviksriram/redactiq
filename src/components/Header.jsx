@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * Top application header component.
@@ -120,3 +121,8 @@ export default function Header({ theme = 'dark', onToggleTheme }) {
     </header>
   );
 }
+
+Header.propTypes = {
+  theme: PropTypes.oneOf(['dark', 'light']),
+  onToggleTheme: PropTypes.func.isRequired,
+};

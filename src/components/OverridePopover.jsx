@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { OVERRIDE_OPTIONS, ENTITY_METADATA } from '../lib/constants.js';
 
 /**
@@ -137,7 +138,8 @@ export default function OverridePopover({
 
       <div className="popover-options-list">
         {options.map((opt, idx) => {
-          const isSelected = currentOverride === opt.id || (!currentOverride && opt.id === OVERRIDE_OPTIONS.DEFAULT);
+          const isSelected =
+            currentOverride === opt.id || (!currentOverride && opt.id === OVERRIDE_OPTIONS.DEFAULT);
           return (
             <button
               key={opt.id}
@@ -178,3 +180,26 @@ export default function OverridePopover({
     </div>
   );
 }
+
+OverridePopover.propTypes = {
+  entity: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
+    normalized: PropTypes.string.isRequired,
+  }).isRequired,
+  currentOverride: PropTypes.string,
+  anchorRect: PropTypes.shape({
+    top: PropTypes.number.isRequired,
+    bottom: PropTypes.number,
+    left: PropTypes.number.isRequired,
+    right: PropTypes.number,
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
+  }).isRequired,
+  onSelect: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+
+OverridePopover.defaultProps = {
+  currentOverride: OVERRIDE_OPTIONS.DEFAULT,
+};

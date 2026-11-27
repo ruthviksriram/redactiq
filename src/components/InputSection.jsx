@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { SAMPLE_TEXT } from '../lib/sampleData.js';
 import { sanitizeFileName } from '../lib/validators.js';
 import { MAX_FILE_SIZE_BYTES, ALLOWED_FILE_EXTENSIONS } from '../lib/constants.js';
@@ -42,7 +43,9 @@ export default function InputSection({ text, onTextChange, fileName, onFileNameC
     // Check size (> 5 MB warning)
     if (file.size > MAX_FILE_SIZE_BYTES) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-      setWarningMessage(`File size is ${sizeMb} MB (above 5 MB). Detection may take a few seconds.`);
+      setWarningMessage(
+        `File size is ${sizeMb} MB (above 5 MB). Detection may take a few seconds.`
+      );
     }
 
     const reader = new FileReader();
@@ -306,10 +309,19 @@ export default function InputSection({ text, onTextChange, fileName, onFileNameC
 
       <div className="input-stats-bar">
         <span className="stats-text">
-          {text.length.toLocaleString()} characters · {text.trim() ? text.trim().split(/\s+/).length.toLocaleString() : 0} words
+          {text.length.toLocaleString()} characters ·{' '}
+          {text.trim() ? text.trim().split(/\s+/).length.toLocaleString() : 0} words
         </span>
         <span className="stats-privacy-hint">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
             <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
@@ -319,3 +331,14 @@ export default function InputSection({ text, onTextChange, fileName, onFileNameC
     </section>
   );
 }
+
+InputSection.propTypes = {
+  text: PropTypes.string.isRequired,
+  onTextChange: PropTypes.func.isRequired,
+  fileName: PropTypes.string,
+  onFileNameChange: PropTypes.func.isRequired,
+};
+
+InputSection.defaultProps = {
+  fileName: null,
+};

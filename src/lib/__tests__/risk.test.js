@@ -13,9 +13,7 @@ describe('risk.js and Custom Rules (Part 2)', () => {
     const text = 'Top secret Project-Orion deployed by secretKey99. Also tested PROJECT-ORION.';
 
     it('detects exact keywords case-insensitively', () => {
-      const customRules = [
-        { id: '1', pattern: 'secretKey99', isRegex: false },
-      ];
+      const customRules = [{ id: '1', pattern: 'secretKey99', isRegex: false }];
       const res = detectEntities(text, {}, customRules);
       const customMatches = res.matches.filter((m) => m.type === ENTITY_TYPES.CUSTOM_RULE);
       expect(customMatches).toHaveLength(1);
@@ -23,9 +21,7 @@ describe('risk.js and Custom Rules (Part 2)', () => {
     });
 
     it('detects patterns using regular expressions', () => {
-      const customRules = [
-        { id: '2', pattern: 'project-[a-z]+', isRegex: true },
-      ];
+      const customRules = [{ id: '2', pattern: 'project-[a-z]+', isRegex: true }];
       const res = detectEntities(text, {}, customRules);
       const customMatches = res.matches.filter((m) => m.type === ENTITY_TYPES.CUSTOM_RULE);
       expect(customMatches).toHaveLength(2);
@@ -34,9 +30,7 @@ describe('risk.js and Custom Rules (Part 2)', () => {
     });
 
     it('gracefully handles invalid regex patterns without throwing', () => {
-      const customRules = [
-        { id: '3', pattern: '[unclosed(bracket', isRegex: true },
-      ];
+      const customRules = [{ id: '3', pattern: '[unclosed(bracket', isRegex: true }];
       expect(() => {
         const res = detectEntities(text, {}, customRules);
         expect(res.matches).toBeDefined();
@@ -53,9 +47,7 @@ describe('risk.js and Custom Rules (Part 2)', () => {
     });
 
     it('calculates score based on sensitivity weights (Cards/Aadhaar high, IP low)', () => {
-      const ipOnly = [
-        { type: ENTITY_TYPES.IP, normalized: '192.168.1.1' },
-      ];
+      const ipOnly = [{ type: ENTITY_TYPES.IP, normalized: '192.168.1.1' }];
       const resIp = calculateRiskScore(ipOnly, {}, {});
       expect(resIp.score).toBeLessThan(15);
       expect(resIp.level).toBe('Low');
@@ -89,9 +81,7 @@ describe('risk.js and Custom Rules (Part 2)', () => {
     });
 
     it('updates live and excludes disabled entity types from risk calculation', () => {
-      const matches = [
-        { type: ENTITY_TYPES.CREDIT_CARD, normalized: '4111111111111111' },
-      ];
+      const matches = [{ type: ENTITY_TYPES.CREDIT_CARD, normalized: '4111111111111111' }];
       const enabled = { [ENTITY_TYPES.CREDIT_CARD]: false };
       const res = calculateRiskScore(matches, {}, enabled);
       expect(res.score).toBe(0);
@@ -179,9 +169,7 @@ describe('risk.js and Custom Rules (Part 2)', () => {
 
   describe('Risk Summary Generator', () => {
     it('generates an auto-generated plain text summary without external AI', () => {
-      const matches = [
-        { type: ENTITY_TYPES.CREDIT_CARD, normalized: '4111111111111111' },
-      ];
+      const matches = [{ type: ENTITY_TYPES.CREDIT_CARD, normalized: '4111111111111111' }];
       const riskScore = calculateRiskScore(matches);
       const summary = generateRiskSummary(matches, riskScore, REDACTION_MODES.FULL);
 

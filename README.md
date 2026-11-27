@@ -57,17 +57,18 @@ Most commercial scrubbing tools rely on cloud backends or external AI APIs. Send
 
 ## 3. Supported Entity Types & Detection Mechanics
 
-| Entity Type | Pattern & Boundaries | Mathematical Validation | Normalization |
-| :--- | :--- | :--- | :--- |
-| **EMAIL** | Standard RFC-compliant email regex (`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`) | Domain and TLD boundary validation | Lowercase string |
-| **PHONE** | Indian mobile (10 digits starting 6–9, optional `+91` or `0` prefix) & International E.164 | Digit length and starting prefix rules | 10-digit number (e.g., `9876543210`) |
-| **IP** | IPv4 (`0–255` per octet) and standard IPv6 addresses | Strict octet integer boundary checks; leading zeros and out-of-bounds numbers rejected | Normalized IP string |
-| **PAN** | Indian Permanent Account Number (`[A-Z]{5}[0-9]{4}[A-Z]`) | 4th character validated against allowed taxpayer statuses (`P`, `C`, `H`, `F`, `A`, `T`, `B`, `L`, `J`, `G`) | Uppercase string |
-| **AADHAAR** | 12 digits, first digit 2–9, optional `4-4-4` grouping with spaces/dashes | **Verhoeff Checksum** (Dihedral $D_5$ group multiplication & permutation tables) | 12 digits |
-| **CREDIT_CARD** | 13–19 digits, optional space/dash delimiters | **Luhn Algorithm** (Modulo 10 check). Failed numbers are safely skipped and reported in the summary bar | Clean numeric digits |
-| **CUSTOM_RULE** | User-defined keywords (case-insensitive) or arbitrary Regex patterns | Boundary checks and safe regex compilation | Lowercase string |
+| Entity Type     | Pattern & Boundaries                                                                       | Mathematical Validation                                                                                      | Normalization                        |
+| :-------------- | :----------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------- | :----------------------------------- |
+| **EMAIL**       | Standard RFC-compliant email regex (`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`)  | Domain and TLD boundary validation                                                                           | Lowercase string                     |
+| **PHONE**       | Indian mobile (10 digits starting 6–9, optional `+91` or `0` prefix) & International E.164 | Digit length and starting prefix rules                                                                       | 10-digit number (e.g., `9876543210`) |
+| **IP**          | IPv4 (`0–255` per octet) and standard IPv6 addresses                                       | Strict octet integer boundary checks; leading zeros and out-of-bounds numbers rejected                       | Normalized IP string                 |
+| **PAN**         | Indian Permanent Account Number (`[A-Z]{5}[0-9]{4}[A-Z]`)                                  | 4th character validated against allowed taxpayer statuses (`P`, `C`, `H`, `F`, `A`, `T`, `B`, `L`, `J`, `G`) | Uppercase string                     |
+| **AADHAAR**     | 12 digits, first digit 2–9, optional `4-4-4` grouping with spaces/dashes                   | **Verhoeff Checksum** (Dihedral $D_5$ group multiplication & permutation tables)                             | 12 digits                            |
+| **CREDIT_CARD** | 13–19 digits, optional space/dash delimiters                                               | **Luhn Algorithm** (Modulo 10 check). Failed numbers are safely skipped and reported in the summary bar      | Clean numeric digits                 |
+| **CUSTOM_RULE** | User-defined keywords (case-insensitive) or arbitrary Regex patterns                       | Boundary checks and safe regex compilation                                                                   | Lowercase string                     |
 
 ### Overlap Resolution Strategy
+
 When text matches multiple patterns (e.g., a credit card containing a substring that matches phone or Aadhaar rules), RedactIQ uses a strict precedence hierarchy:
 $$\text{Credit Card} > \text{Aadhaar} > \text{PAN} > \text{IP} > \text{Email} > \text{Phone}$$
 Longer, mathematically verified matches always take precedence over shorter or unvalidated regex matches.
@@ -140,10 +141,12 @@ RedactIQ is built on the principle that the most secure data transfer is **no da
 ## 8. Getting Started
 
 ### Prerequisites
+
 - Node.js `20.x` or higher
 - npm `10.x` or higher
 
 ### Local Development
+
 ```bash
 # Clone the repository
 git clone https://github.com/ruthviksriram/redactiq.git
@@ -155,9 +158,11 @@ npm ci
 # Start local development server (live HMR)
 npm run dev
 ```
+
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ### Running Tests, Linting, and Coverage
+
 ```bash
 # Run all Vitest unit, edge-case, and component tests
 npm test
@@ -180,29 +185,30 @@ RedactIQ is verified by 76 automated tests spanning unit regex/checksum logic, e
 
 ### V8 Code Coverage (`src/lib`)
 
-| File | % Stmts | % Branch | % Funcs | % Lines | Uncovered Lines |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **All files (`src/lib`)** | **98.56%** | **84.05%** | **100%** | **98.56%** | |
-| `constants.js` | 100% | 100% | 100% | 100% | |
-| `detectors.js` | 99.69% | 86.3% | 100% | 99.69% | 277 |
-| `redact.js` | 95.52% | 76.78% | 100% | 95.52% | 102-104 |
-| `risk.js` | 97.33% | 85.96% | 100% | 97.33% | 51, 146 |
-| `sampleData.js` | 100% | 100% | 100% | 100% | |
-| `validators.js` | 100% | 86.95% | 100% | 100% | |
+| File                      | % Stmts    | % Branch   | % Funcs  | % Lines    | Uncovered Lines |
+| :------------------------ | :--------- | :--------- | :------- | :--------- | :-------------- |
+| **All files (`src/lib`)** | **98.56%** | **84.05%** | **100%** | **98.56%** |                 |
+| `constants.js`            | 100%       | 100%       | 100%     | 100%       |                 |
+| `detectors.js`            | 99.69%     | 86.3%      | 100%     | 99.69%     | 277             |
+| `redact.js`               | 95.52%     | 76.78%     | 100%     | 95.52%     | 102-104         |
+| `risk.js`                 | 97.33%     | 85.96%     | 100%     | 97.33%     | 51, 146         |
+| `sampleData.js`           | 100%       | 100%       | 100%     | 100%       |                 |
+| `validators.js`           | 100%       | 86.95%     | 100%     | 100%       |                 |
 
 ### Accessibility & Hardening
+
 - **WCAG 2.1 AA Compliance**: Enforced via `eslint-plugin-jsx-a11y` with 0 warnings or errors across the entire codebase. Interactive text markers in the audit view are rendered as accessible native `<button>` elements with ARIA dialog/menu attributes.
 - **Client-Side Sandbox Integrity**: Wrapped with a zero-telemetry React `ErrorBoundary` and verified by Content Security Policy (`connect-src 'none'`).
 - **Filename Traversal Defense**: All uploaded and exported files are processed through `sanitizeFileName()`, stripping null bytes, directory separators (`../`), and ASCII control characters.
 
 ### Lighthouse Audit Scores
 
-| Category | Score | Status |
-| :--- | :--- | :--- |
-| **Performance** | **100** | 🟢 Perfect |
-| **Accessibility** | **100** | 🟢 Perfect |
-| **Best Practices** | **100** | 🟢 Perfect |
-| **SEO** | **91** | 🟢 Near Perfect |
+| Category           | Score   | Status          |
+| :----------------- | :------ | :-------------- |
+| **Performance**    | **100** | 🟢 Perfect      |
+| **Accessibility**  | **100** | 🟢 Perfect      |
+| **Best Practices** | **100** | 🟢 Perfect      |
+| **SEO**            | **91**  | 🟢 Near Perfect |
 
 > [!NOTE]
 > The SEO `robots.txt` audit check fails only because RedactIQ's strict Content Security Policy (`connect-src 'none'`) blocks all outgoing network and fetch requests by design. This is intentional and represents the core privacy guarantee of the application: zero network calls, zero telemetry, and zero third-party data transmission under any circumstances.
@@ -212,15 +218,18 @@ RedactIQ is verified by 76 automated tests spanning unit regex/checksum logic, e
 ## 10. Deployment
 
 ### Option A: Vercel (Primary & Recommended)
+
 RedactIQ includes a preconfigured `vercel.json` with build settings, SPA route fallbacks, and hardened production headers:
 
 ```bash
 # Deploy with Vercel CLI
 npx vercel --prod
 ```
+
 Or connect your GitHub repository directly to [Vercel](https://vercel.com). Vercel automatically detects the Vite framework and applies the settings in `vercel.json`.
 
 ### Option B: Google Cloud Run (Alternative)
+
 A multi-stage container configuration (`Dockerfile` + `nginx.conf`) is included:
 
 ```bash

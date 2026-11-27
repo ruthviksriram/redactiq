@@ -98,14 +98,18 @@ describe('Edge-Case & Robustness Tests', () => {
   describe('4. Very Long Input & Stress Test', () => {
     it('processes a 100,000 character document with hundreds of PII items efficiently without error', () => {
       // Build 100k character text with interleaved PII
-      const lineTemplate = 'User incident #48291: contact user.alpha_{N}@test-domain.com at phone +91 98765 {PAD} on IP 10.0.{OCTET}.12. ';
+      const lineTemplate =
+        'User incident #48291: contact user.alpha_{N}@test-domain.com at phone +91 98765 {PAD} on IP 10.0.{OCTET}.12. ';
       let largeText = '';
       const iterations = 800; // ~100k chars
 
       for (let i = 0; i < iterations; i++) {
         const pad = String(i % 10000).padStart(4, '0');
         const octet = (i % 250) + 1;
-        largeText += lineTemplate.replace('{N}', String(i)).replace('{PAD}', pad).replace('{OCTET}', String(octet));
+        largeText += lineTemplate
+          .replace('{N}', String(i))
+          .replace('{PAD}', pad)
+          .replace('{OCTET}', String(octet));
       }
 
       expect(largeText.length).toBeGreaterThan(80000);

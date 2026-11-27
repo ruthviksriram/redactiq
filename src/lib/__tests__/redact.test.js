@@ -44,7 +44,9 @@ describe('redact.js', () => {
     });
 
     it('masks credit card in XXXX-XXXX-XXXX-1234 format', () => {
-      expect(getPartialMask(ENTITY_TYPES.CREDIT_CARD, '4111 1111 1111 1234')).toBe('XXXX-XXXX-XXXX-1234');
+      expect(getPartialMask(ENTITY_TYPES.CREDIT_CARD, '4111 1111 1111 1234')).toBe(
+        'XXXX-XXXX-XXXX-1234'
+      );
     });
 
     it('masks Aadhaar in XXXX-XXXX-1234 format', () => {
@@ -77,9 +79,27 @@ describe('redact.js', () => {
       const s3 = text.indexOf(p3);
 
       const matches = [
-        { type: ENTITY_TYPES.PHONE, value: p1, start: s1, end: s1 + p1.length, normalized: '9876543210' },
-        { type: ENTITY_TYPES.PHONE, value: p2, start: s2, end: s2 + p2.length, normalized: '9876543210' },
-        { type: ENTITY_TYPES.PHONE, value: p3, start: s3, end: s3 + p3.length, normalized: '9876543210' },
+        {
+          type: ENTITY_TYPES.PHONE,
+          value: p1,
+          start: s1,
+          end: s1 + p1.length,
+          normalized: '9876543210',
+        },
+        {
+          type: ENTITY_TYPES.PHONE,
+          value: p2,
+          start: s2,
+          end: s2 + p2.length,
+          normalized: '9876543210',
+        },
+        {
+          type: ENTITY_TYPES.PHONE,
+          value: p3,
+          start: s3,
+          end: s3 + p3.length,
+          normalized: '9876543210',
+        },
       ];
       const res = redactText(text, matches, REDACTION_MODES.PSEUDONYM);
       expect(res.sanitizedText).toBe('Primary: PHONE_01, Secondary: PHONE_01, Alt: PHONE_01.');
@@ -102,7 +122,13 @@ describe('redact.js', () => {
       const matches = [
         { type: ENTITY_TYPES.EMAIL, value: e1, start: s1, end: s1 + e1.length, normalized: e1 },
         { type: ENTITY_TYPES.EMAIL, value: e2, start: s2, end: s2 + e2.length, normalized: e2 },
-        { type: ENTITY_TYPES.CREDIT_CARD, value: c1, start: s3, end: s3 + c1.length, normalized: '4111111111111111' },
+        {
+          type: ENTITY_TYPES.CREDIT_CARD,
+          value: c1,
+          start: s3,
+          end: s3 + c1.length,
+          normalized: '4111111111111111',
+        },
       ];
       const res = redactText(text, matches, REDACTION_MODES.PSEUDONYM);
       expect(res.sanitizedText).toBe('User EMAIL_01 and EMAIL_02 with card CARD_01.');
@@ -120,7 +146,11 @@ describe('redact.js', () => {
         { type: ENTITY_TYPES.EMAIL, value: e1, start: s1, end: s1 + e1.length, normalized: e1 },
         { type: ENTITY_TYPES.IP, value: ip1, start: s2, end: s2 + ip1.length, normalized: ip1 },
       ];
-      for (const mode of [REDACTION_MODES.FULL, REDACTION_MODES.PARTIAL, REDACTION_MODES.PSEUDONYM]) {
+      for (const mode of [
+        REDACTION_MODES.FULL,
+        REDACTION_MODES.PARTIAL,
+        REDACTION_MODES.PSEUDONYM,
+      ]) {
         const res = redactText(text, matches, mode);
         // The number of commas should remain exactly 2
         const commaCount = (res.sanitizedText.match(/,/g) || []).length;
@@ -129,7 +159,8 @@ describe('redact.js', () => {
     });
 
     it('guarantees sanitized export/copy text contains no UI type labels or HTML tags', () => {
-      const text = 'Alert: user john@example.com logged in from 10.0.0.1 with card 4111 1111 1111 1111.';
+      const text =
+        'Alert: user john@example.com logged in from 10.0.0.1 with card 4111 1111 1111 1111.';
       const e1 = 'john@example.com';
       const ip1 = '10.0.0.1';
       const c1 = '4111 1111 1111 1111';
@@ -141,10 +172,20 @@ describe('redact.js', () => {
       const matches = [
         { type: ENTITY_TYPES.EMAIL, value: e1, start: s1, end: s1 + e1.length, normalized: e1 },
         { type: ENTITY_TYPES.IP, value: ip1, start: s2, end: s2 + ip1.length, normalized: ip1 },
-        { type: ENTITY_TYPES.CREDIT_CARD, value: c1, start: s3, end: s3 + c1.length, normalized: '4111111111111111' },
+        {
+          type: ENTITY_TYPES.CREDIT_CARD,
+          value: c1,
+          start: s3,
+          end: s3 + c1.length,
+          normalized: '4111111111111111',
+        },
       ];
 
-      for (const mode of [REDACTION_MODES.FULL, REDACTION_MODES.PARTIAL, REDACTION_MODES.PSEUDONYM]) {
+      for (const mode of [
+        REDACTION_MODES.FULL,
+        REDACTION_MODES.PARTIAL,
+        REDACTION_MODES.PSEUDONYM,
+      ]) {
         const res = redactText(text, matches, mode);
         // Verify output is strictly plain text without any HTML elements or UI badges
         expect(res.sanitizedText).not.toMatch(/<[^>]*>/);
@@ -161,7 +202,8 @@ describe('redact.js', () => {
   });
 
   describe('Custom Mode and Per-Item Overrides (Part 1)', () => {
-    const text = 'User john@corp.com with phone +91 98765 43210 and card 4111 1111 1111 1111. Again john@corp.com called.';
+    const text =
+      'User john@corp.com with phone +91 98765 43210 and card 4111 1111 1111 1111. Again john@corp.com called.';
     const e1 = 'john@corp.com';
     const p1 = '+91 98765 43210';
     const c1 = '4111 1111 1111 1111';
@@ -172,8 +214,20 @@ describe('redact.js', () => {
 
     const matches = [
       { type: ENTITY_TYPES.EMAIL, value: e1, start: s1, end: s1 + e1.length, normalized: e1 },
-      { type: ENTITY_TYPES.PHONE, value: p1, start: s2, end: s2 + p1.length, normalized: '9876543210' },
-      { type: ENTITY_TYPES.CREDIT_CARD, value: c1, start: s3, end: s3 + c1.length, normalized: '4111111111111111' },
+      {
+        type: ENTITY_TYPES.PHONE,
+        value: p1,
+        start: s2,
+        end: s2 + p1.length,
+        normalized: '9876543210',
+      },
+      {
+        type: ENTITY_TYPES.CREDIT_CARD,
+        value: c1,
+        start: s3,
+        end: s3 + c1.length,
+        normalized: '4111111111111111',
+      },
       { type: ENTITY_TYPES.EMAIL, value: e1, start: s4, end: s4 + e1.length, normalized: e1 },
     ];
 

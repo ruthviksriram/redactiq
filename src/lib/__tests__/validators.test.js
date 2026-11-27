@@ -126,8 +126,8 @@ describe('validators.js', () => {
 
     it('rejects malformed PAN strings', () => {
       expect(validatePAN('AAAP12345C')).toBe(false); // 4 letters + 5 digits
-      expect(validatePAN('AAAPL12345')).toBe(false);  // ends in digit
-      expect(validatePAN('AAAPL123C')).toBe(false);   // 3 digits
+      expect(validatePAN('AAAPL12345')).toBe(false); // ends in digit
+      expect(validatePAN('AAAPL123C')).toBe(false); // 3 digits
       expect(validatePAN('AAAPL1234CC')).toBe(false); // too long
       expect(validatePAN('')).toBe(false);
     });

@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import PropTypes from 'prop-types';
 import HighlightedText from './HighlightedText.jsx';
 import OverridePopover from './OverridePopover.jsx';
 import { REDACTION_MODES, OVERRIDE_OPTIONS } from '../lib/constants.js';
@@ -94,7 +95,17 @@ export default function AuditView({
                   className="btn-reset-overrides btn-3d"
                   aria-label="Reset all per-item overrides to default rules"
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
                     <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                     <path d="M3 3v5h5" />
                   </svg>
@@ -127,7 +138,9 @@ export default function AuditView({
                   <polyline points="10 9 9 9 8 9" />
                 </svg>
                 <p>No content to display.</p>
-                <span>Paste text or click &quot;Load Sample&quot; above to inspect detected entities.</span>
+                <span>
+                  Paste text or click &quot;Load Sample&quot; above to inspect detected entities.
+                </span>
               </div>
             ) : (
               <HighlightedText
@@ -149,9 +162,7 @@ export default function AuditView({
               <span className="panel-dot sanitized-dot" aria-hidden="true"></span>
               <h3 className="panel-title">Sanitized Output</h3>
             </div>
-            <span className="panel-badge sanitized-badge">
-              Mode: {modeLabels[mode] || mode}
-            </span>
+            <span className="panel-badge sanitized-badge">Mode: {modeLabels[mode] || mode}</span>
           </div>
 
           <div className="panel-body">
@@ -202,3 +213,20 @@ export default function AuditView({
     </section>
   );
 }
+
+AuditView.propTypes = {
+  originalText: PropTypes.string.isRequired,
+  matches: PropTypes.arrayOf(PropTypes.object).isRequired,
+  sanitizedText: PropTypes.string.isRequired,
+  replacements: PropTypes.arrayOf(PropTypes.object).isRequired,
+  mode: PropTypes.string.isRequired,
+  overrides: PropTypes.objectOf(PropTypes.string),
+  onOverrideChange: PropTypes.func,
+  onResetOverrides: PropTypes.func,
+};
+
+AuditView.defaultProps = {
+  overrides: {},
+  onOverrideChange: null,
+  onResetOverrides: null,
+};

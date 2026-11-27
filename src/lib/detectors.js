@@ -25,22 +25,28 @@ import {
  * @typedef {Object} DetectionResult
  * @property {DetectedEntity[]} matches - Non-overlapping detected entities sorted by start index.
  * @property {number} luhnFailedCount - Count of card-like numeric sequences that failed Luhn validation.
+ * @property {number} verhoeffFailedCount - Count of 12-digit Aadhaar candidate sequences that failed Verhoeff checksum.
  */
 
 // Regex definitions with strict boundary constraints
-const EMAIL_REGEX = /\b[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+\b/g;
+const EMAIL_REGEX =
+  /\b[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+\b/g;
 
 // Indian mobile: 10 digits starting 6-9, optional +91 / 0 prefix, optional spaces or dashes
-const INDIAN_PHONE_REGEX = /(?<!\w|\+)(?:\+91[ -]?|0)?[6-9]\d{2}[ -]?\d{3}[ -]?\d{4}(?!\d)|(?<!\w|\+)(?:\+91[ -]?|0)?[6-9]\d{4}[ -]?\d{5}(?!\d)|(?<!\w|\+)(?:\+91[ -]?|0)?[6-9]\d{9}(?!\d)/g;
+const INDIAN_PHONE_REGEX =
+  /(?<!\w|\+)(?:\+91[ -]?|0)?[6-9]\d{2}[ -]?\d{3}[ -]?\d{4}(?!\d)|(?<!\w|\+)(?:\+91[ -]?|0)?[6-9]\d{4}[ -]?\d{5}(?!\d)|(?<!\w|\+)(?:\+91[ -]?|0)?[6-9]\d{9}(?!\d)/g;
 
 // Common international format: e.g. +1 555-123-4567 or +1 (555) 123-4567 or +44 20 7946 0958
-const INTL_PHONE_REGEX = /(?<!\w|\+)\+\d{1,3}[ -]?(?:\(\d{1,4}\)|\d{1,4})[ -]?\d{1,4}[ -]?\d{3,4}(?!\d)/g;
+const INTL_PHONE_REGEX =
+  /(?<!\w|\+)\+\d{1,3}[ -]?(?:\(\d{1,4}\)|\d{1,4})[ -]?\d{1,4}[ -]?\d{3,4}(?!\d)/g;
 
 // IPv4 octet candidate regex (handles terminal sentence periods and rejects 5-octet strings)
-const IPV4_CANDIDATE_REGEX = /(?<!\d\.)(?<![a-zA-Z0-9])\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?!\.\d)(?![a-zA-Z0-9])/g;
+const IPV4_CANDIDATE_REGEX =
+  /(?<!\d\.)(?<![a-zA-Z0-9])\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?!\.\d)(?![a-zA-Z0-9])/g;
 
 // IPv6 candidate regex
-const IPV6_CANDIDATE_REGEX = /(?<!\w|:)(?:[0-9a-fA-F]{1,4}:){2,7}[0-9a-fA-F]{1,4}(?!\w|:)|(?<!\w|:)::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}(?!\w|:)|(?<!\w|:)(?:[0-9a-fA-F]{1,4}:){1,7}:(?!\w|:)/g;
+const IPV6_CANDIDATE_REGEX =
+  /(?<!\w|:)(?:[0-9a-fA-F]{1,4}:){2,7}[0-9a-fA-F]{1,4}(?!\w|:)|(?<!\w|:)::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}(?!\w|:)|(?<!\w|:)(?:[0-9a-fA-F]{1,4}:){1,7}:(?!\w|:)/g;
 
 // Indian PAN format: 5 letters + 4 digits + 1 letter
 const PAN_REGEX = /(?<![a-zA-Z0-9])[a-zA-Z]{5}[0-9]{4}[a-zA-Z](?![a-zA-Z0-9])/g;
@@ -164,8 +170,7 @@ export function detectEntities(text, enabledTypes = {}, customRules = [], option
     return { matches: [], luhnFailedCount: 0, verhoeffFailedCount: 0 };
   }
 
-  const { strict = true } =
-    typeof options === 'boolean' ? { strict: options } : options || {};
+  const { strict = true } = typeof options === 'boolean' ? { strict: options } : options || {};
 
   // Default all types to enabled if not specified
   const isEnabled = (type) => enabledTypes[type] !== false;

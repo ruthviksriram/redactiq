@@ -3,7 +3,12 @@
  * Supports Full Mask, Partial Mask, and Consistent Pseudonymization.
  */
 
-import { ENTITY_TYPES, REDACTION_MODES, OVERRIDE_OPTIONS, DEFAULT_CUSTOM_TYPE_MODES } from './constants.js';
+import {
+  ENTITY_TYPES,
+  REDACTION_MODES,
+  OVERRIDE_OPTIONS,
+  DEFAULT_CUSTOM_TYPE_MODES,
+} from './constants.js';
 
 /**
  * Generates a partial mask string for a detected entity.
@@ -92,9 +97,15 @@ function getPseudonymPrefix(type) {
  * @param {Record<string, string>} [overrides] - Per-item overrides.
  * @returns {string} Effective mode (FULL, PARTIAL, PSEUDONYM, or NONE).
  */
-export function resolveEffectiveMode(match, mode = REDACTION_MODES.FULL, typeModes = {}, overrides = {}) {
+export function resolveEffectiveMode(
+  match,
+  mode = REDACTION_MODES.FULL,
+  typeModes = {},
+  overrides = {}
+) {
   const itemKey = `${match.type}::${match.normalized}`;
-  const override = overrides[itemKey] !== undefined ? overrides[itemKey] : overrides[match.normalized];
+  const override =
+    overrides[itemKey] !== undefined ? overrides[itemKey] : overrides[match.normalized];
 
   if (override && override !== OVERRIDE_OPTIONS.DEFAULT) {
     return override;
@@ -117,7 +128,13 @@ export function resolveEffectiveMode(match, mode = REDACTION_MODES.FULL, typeMod
  * @param {Record<string, string>} [overridesParam]
  * @returns {{ sanitizedText: string, replacements: Array<{ placeholder: string, original: string, type: string, start: number, end: number, mode: string, isExcluded: boolean }>, mapping: Array<{ placeholder: string, original: string, type: string, normalized: string }>, excludedCount: number }}
  */
-export function redactText(text, matches, modeOrOptions = REDACTION_MODES.FULL, typeModesParam = {}, overridesParam = {}) {
+export function redactText(
+  text,
+  matches,
+  modeOrOptions = REDACTION_MODES.FULL,
+  typeModesParam = {},
+  overridesParam = {}
+) {
   if (!text || !matches || matches.length === 0) {
     return {
       sanitizedText: text || '',

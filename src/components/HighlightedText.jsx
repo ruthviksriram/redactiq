@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ENTITY_METADATA, OVERRIDE_OPTIONS } from '../lib/constants.js';
 
 /**
@@ -156,3 +157,32 @@ export default function HighlightedText({
 
   return <div className="highlighted-content-scroll">{elements}</div>;
 }
+
+HighlightedText.propTypes = {
+  text: PropTypes.string.isRequired,
+  spans: PropTypes.arrayOf(
+    PropTypes.shape({
+      start: PropTypes.number.isRequired,
+      end: PropTypes.number.isRequired,
+      type: PropTypes.string.isRequired,
+      value: PropTypes.string,
+      placeholder: PropTypes.string,
+      normalized: PropTypes.string,
+      mode: PropTypes.string,
+      isExcluded: PropTypes.bool,
+      unverified: PropTypes.bool,
+    })
+  ),
+  isRedacted: PropTypes.bool,
+  allowOverrides: PropTypes.bool,
+  overrides: PropTypes.objectOf(PropTypes.string),
+  onSelectEntity: PropTypes.func,
+};
+
+HighlightedText.defaultProps = {
+  spans: [],
+  isRedacted: false,
+  allowOverrides: false,
+  overrides: {},
+  onSelectEntity: null,
+};

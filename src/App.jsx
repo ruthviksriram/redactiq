@@ -213,10 +213,7 @@ export default function App() {
           onFileNameChange={setFileName}
         />
 
-        <CustomRulesSection
-          rules={customRules}
-          onRulesChange={setCustomRules}
-        />
+        <CustomRulesSection rules={customRules} onRulesChange={setCustomRules} />
 
         <ControlsBar
           mode={mode}

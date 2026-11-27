@@ -241,6 +241,26 @@ B) Per-item overrides (work in every mode)
 ```
 *Note: Completed Part 1 - implemented 4th redaction mode "Custom" with per-entity selectors in ControlsBar, per-item override popover in AuditView with ARIA menu/menuitemradio, normalized entity grouping, "Reset all overrides" button, exclusion tracking in SummaryBar, memory-only overrides in redact.js with strict precedence, unit tests in redact.test.js, and browser verification in dual themes.*
 
+## Prompt 10 (Part 2)
+```
+PART 2
+C) Risk meter and summary
+- src/lib/risk.js (pure functions + tests): 0-100 score using sensitivity weights in constants.js (CREDIT_CARD and AADHAAR high, PAN and PHONE medium, EMAIL medium-low, IP low), capped at 100, levels Low / Medium / High / Critical
+- RiskMeter.jsx gauge next to the total count, level shown as text and colour, role="meter" with aria-valuenow
+- A short auto-generated summary (no AI): what was found, the risk level, a recommended mode
+- Updates live and follows toggles and "Don't redact"
+
+D) Extras
+- Custom rules: user-added keywords (exact, case-insensitive) or simple regex, detected as a CUSTOM entity type with its own colour and count, following the current mode, memory only; invalid regex shows a friendly error and never crashes
+- Compliance tags in the summary: India DPDP Act 2023 (any personal data), PCI-DSS (cards), GDPR (emails, IPs, phones) as labelled badges
+- "Download audit report" (JSON): timestamp, mode, counts per type, risk score, Luhn/Verhoeff-failed counts, compliance tags — NO original PII values; add a test proving that
+- Unit tests for custom rules (keyword, regex, invalid regex), risk scoring and compliance tags
+
+For both parts: test in the browser with the sample in both themes, keep the Problems tab at 0, run npm test, npm run lint and npm run build, update PROMPT_LOG.md and the README (document every new feature), commit to main and push. Show me screenshots of Custom mode, the override menu and the risk meter.
+```
+*Note: Completed Part 2 - built risk.js with 0-100 weighted scoring and plain-English summary generator, RiskMeter.jsx component, regulatory compliance framework badges (PCI-DSS, DPDP, GDPR), CustomRulesSection.jsx for keywords and safe regex patterns, zero-PII JSON audit report downloader in ExportBar.jsx, 13 new unit tests in risk.test.js (61 passing tests total), 0 ESLint errors/warnings, browser verification in dual themes, and pushed to origin main.*
+
+
 
 
 

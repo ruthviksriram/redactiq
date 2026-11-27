@@ -11,7 +11,11 @@ import React, { useState } from 'react';
  * @param {string} [props.fileName] - Original uploaded filename if any.
  * @returns {React.JSX.Element}
  */
-export default function ExportBar({ sanitizedText, fileName = '' }) {
+export default function ExportBar({
+  sanitizedText,
+  fileName = '',
+  auditReportData,
+}) {
   const [copied, setCopied] = useState(false);
 
   const hasContent = Boolean(sanitizedText && sanitizedText.trim().length > 0);
@@ -38,6 +42,25 @@ export default function ExportBar({ sanitizedText, fileName = '' }) {
     const anchor = document.createElement('a');
     anchor.href = url;
     anchor.download = exportFileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    URL.revokeObjectURL(url);
+  };
+
+  /**
+   * Downloads the privacy and compliance audit report in JSON format.
+   * Guarantees zero unmasked PII values are included.
+   */
+  const handleDownloadAuditReport = () => {
+    if (!auditReportData) return;
+
+    const jsonStr = JSON.stringify(auditReportData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `redactiq_audit_report_${Date.now()}.json`;
     document.body.appendChild(anchor);
     anchor.click();
     document.body.removeChild(anchor);
@@ -99,6 +122,24 @@ export default function ExportBar({ sanitizedText, fileName = '' }) {
       </div>
 
       <div className="export-actions">
+        {auditReportData && (
+          <button
+            type="button"
+            onClick={handleDownloadAuditReport}
+            className="btn btn-3d btn-secondary report-btn"
+            aria-label="Download zero-PII privacy and compliance audit report in JSON format"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            <span>Download audit report (JSON)</span>
+          </button>
+        )}
+
         <button
           type="button"
           onClick={handleCopy}

@@ -33,6 +33,10 @@ Most commercial scrubbing tools rely on cloud backends or external AI APIs. Send
   3. **Consistent Pseudonymization**: Maps identical normalized entities to deterministic placeholders (`EMAIL_01`, `PHONE_01`) across the document. Guaranteed comma-free to preserve CSV structure.
   4. **Custom Mode**: Granular per-entity type strategy configuration (e.g. Email = Partial, Aadhaar = Partial, others = Full Mask).
 - **Interactive Per-Item Overrides**: Click or activate any detected entity span in the Original panel to open an accessible popover and override its redaction behavior (`Full Mask`, `Partial Mask`, `Pseudonym`, or `Don't redact`). Overrides apply to the entity's normalized value so all occurrences stay synchronized, with an `• edited` indicator and a 1-click `Reset all overrides` action.
+- **Privacy Risk Exposure Meter & Guidance**: Real-time 0–100 sensitivity scoring (`Low`, `Medium`, `High`, `Critical`) using mathematical sensitivity weights (Payment Cards & Aadhaar high, PAN & Phone medium, Email medium-low, IP low). Accompanied by auto-generated non-AI strategic recommendations and full responsiveness to entity toggles and exclusions.
+- **Regulatory Compliance Framework Flags**: Automatic live detection of applicable regulatory domains: **PCI-DSS v4.0** (Cardholder data), **India DPDP Act 2023** (Digital personal identification), and **EU GDPR Art. 4** (Personal contact & IP telemetry).
+- **User-Defined Custom Detection Rules**: Add custom proprietary terms, codenames, or regular expressions directly from the UI. Detected as custom entity chips with full redaction mode support and resilient regex error boundaries that never crash.
+- **Zero-PII JSON Compliance Audit Report**: 1-click export of structured security reports containing environment assertions, timestamps, exact entity counts, risk scores, and regulatory flags with a mathematical guarantee of zero unmasked PII.
 - **Side-by-Side Audit View**: Real-time comparison between original source text and sanitized output with color-coded entity tags. Implemented using React element tokens with **zero `dangerouslySetInnerHTML`** to prevent XSS.
 - **Ephemeral Pseudonymization Mapping Table**: Reverse-lookup table visible only in pseudonymization mode. Stored strictly in volatile RAM and automatically excluded from exports.
 - **Safe 1-Click Export**:
@@ -57,6 +61,7 @@ Most commercial scrubbing tools rely on cloud backends or external AI APIs. Send
 | **PAN** | Indian Permanent Account Number (`[A-Z]{5}[0-9]{4}[A-Z]`) | 4th character validated against allowed taxpayer statuses (`P`, `C`, `H`, `F`, `A`, `T`, `B`, `L`, `J`, `G`) | Uppercase string |
 | **AADHAAR** | 12 digits, first digit 2–9, optional `4-4-4` grouping with spaces/dashes | **Verhoeff Checksum** (Dihedral $D_5$ group multiplication & permutation tables) | 12 digits |
 | **CREDIT_CARD** | 13–19 digits, optional space/dash delimiters | **Luhn Algorithm** (Modulo 10 check). Failed numbers are safely skipped and reported in the summary bar | Clean numeric digits |
+| **CUSTOM_RULE** | User-defined keywords (case-insensitive) or arbitrary Regex patterns | Boundary checks and safe regex compilation | Lowercase string |
 
 ### Overlap Resolution Strategy
 When text matches multiple patterns (e.g., a credit card containing a substring that matches phone or Aadhaar rules), RedactIQ uses a strict precedence hierarchy:

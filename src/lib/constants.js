@@ -14,6 +14,7 @@ export const ENTITY_TYPES = {
   PAN: 'PAN',
   AADHAAR: 'AADHAAR',
   CREDIT_CARD: 'CREDIT_CARD',
+  CUSTOM_RULE: 'CUSTOM_RULE',
 };
 
 /**
@@ -63,6 +64,13 @@ export const ENTITY_METADATA = {
     textColor: 'var(--hl-card-text)',
     className: 'hl-card',
   },
+  [ENTITY_TYPES.CUSTOM_RULE]: {
+    type: ENTITY_TYPES.CUSTOM_RULE,
+    label: 'Custom Rule',
+    badgeColor: '#F0ABFC',
+    textColor: '#581C87',
+    className: 'hl-custom',
+  },
 };
 
 /**
@@ -101,6 +109,7 @@ export const DEFAULT_CUSTOM_TYPE_MODES = {
   [ENTITY_TYPES.IP]: REDACTION_MODES.FULL,
   [ENTITY_TYPES.PAN]: REDACTION_MODES.FULL,
   [ENTITY_TYPES.CREDIT_CARD]: REDACTION_MODES.FULL,
+  [ENTITY_TYPES.CUSTOM_RULE]: REDACTION_MODES.FULL,
 };
 
 /**
@@ -112,6 +121,7 @@ export const ENTITY_WEIGHTS = {
   [ENTITY_TYPES.AADHAAR]: 25,
   [ENTITY_TYPES.PAN]: 20,
   [ENTITY_TYPES.PHONE]: 15,
+  [ENTITY_TYPES.CUSTOM_RULE]: 15,
   [ENTITY_TYPES.EMAIL]: 10,
   [ENTITY_TYPES.IP]: 5,
 };

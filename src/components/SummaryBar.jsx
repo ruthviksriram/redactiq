@@ -1,14 +1,19 @@
 import React from 'react';
 import { ENTITY_TYPES, ENTITY_METADATA } from '../lib/constants.js';
+import RiskMeter from './RiskMeter.jsx';
 
 /**
  * Summary bar component displaying detection statistics, live entity counts,
- * an aria-live region for accessibility, and note on Luhn-failed numbers.
+ * privacy risk gauge, compliance framework flags, and accessibility live regions.
  *
  * @param {Object} props
  * @param {import('../lib/detectors.js').DetectedEntity[]} props.matches - Valid detected entities.
  * @param {number} props.luhnFailedCount - Count of card-like sequences failing Luhn.
  * @param {Object.<string, boolean>} props.enabledTypes - Map of enabled types.
+ * @param {number} [props.excludedCount=0] - Count of items excluded by "Don't redact".
+ * @param {{ score: number, level: string, activeCount: number }} [props.riskScore] - Risk score object.
+ * @param {{ title: string, details: string, recommendation: string }} [props.riskSummary] - Risk summary object.
+ * @param {Array<{ id: string, name: string, description: string, color: string }>} [props.complianceTags] - Compliance tags.
  * @returns {React.ReactElement} The SummaryBar component.
  */
 export default function SummaryBar({
@@ -16,16 +21,15 @@ export default function SummaryBar({
   luhnFailedCount = 0,
   enabledTypes = {},
   excludedCount = 0,
+  riskScore,
+  riskSummary,
+  complianceTags = [],
 }) {
   // Aggregate counts per entity type
-  const countsByType = {
-    [ENTITY_TYPES.EMAIL]: 0,
-    [ENTITY_TYPES.PHONE]: 0,
-    [ENTITY_TYPES.IP]: 0,
-    [ENTITY_TYPES.PAN]: 0,
-    [ENTITY_TYPES.AADHAAR]: 0,
-    [ENTITY_TYPES.CREDIT_CARD]: 0,
-  };
+  const countsByType = {};
+  for (const type of Object.values(ENTITY_TYPES)) {
+    countsByType[type] = 0;
+  }
 
   for (const match of matches) {
     if (countsByType[match.type] !== undefined) {
@@ -60,6 +64,7 @@ export default function SummaryBar({
         <div className="entity-stat-grid" role="list" aria-label="Detected entity counts">
           {Object.values(ENTITY_TYPES).map((type) => {
             const meta = ENTITY_METADATA[type];
+            if (!meta) return null;
             const isEnabled = enabledTypes[type] !== false;
             const count = countsByType[type] || 0;
 
@@ -90,14 +95,39 @@ export default function SummaryBar({
         </div>
       </div>
 
+      {/* Risk Exposure Meter & Guidance */}
+      {riskScore && (
+        <RiskMeter riskScore={riskScore} riskSummary={riskSummary} />
+      )}
+
+      {/* Regulatory Compliance Frameworks */}
+      {complianceTags.length > 0 && (
+        <div className="compliance-tags-bar" role="region" aria-label="Regulatory Compliance Flags">
+          <span className="compliance-title">Applicable Regulatory Frameworks:</span>
+          <div className="compliance-badges-list">
+            {complianceTags.map((tag) => (
+              <div
+                key={tag.id}
+                className="compliance-pill"
+                style={{
+                  '--comp-color': tag.color,
+                }}
+                title={tag.description}
+              >
+                <span className="comp-dot" aria-hidden="true" />
+                <span className="comp-name">{tag.name}</span>
+                <span className="comp-desc">— {tag.description}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Accessible aria-live status announcement for screen readers */}
       <div className="visually-hidden" aria-live="polite" aria-atomic="true">
         {totalCount === 0
           ? 'No PII entities detected.'
-          : `${totalCount} PII entities detected: ${Object.entries(countsByType)
-              .filter(([_, count]) => count > 0)
-              .map(([type, count]) => `${count} ${ENTITY_METADATA[type]?.label || type}`)
-              .join(', ')}.`}
+          : `${totalCount} PII entities detected, risk level ${riskScore?.level || 'Low'}.`}
       </div>
 
       {/* Note under counts regarding Luhn validation failures */}

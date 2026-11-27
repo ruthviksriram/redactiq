@@ -7,9 +7,16 @@ import AuditView from './components/AuditView.jsx';
 import ExportBar from './components/ExportBar.jsx';
 import MappingTable from './components/MappingTable.jsx';
 import CustomCursor from './components/CustomCursor.jsx';
+import CustomRulesSection from './components/CustomRulesSection.jsx';
 import { useCardTilt, useButtonGlow } from './lib/useEffects3D.js';
 import { detectEntities } from './lib/detectors.js';
 import { redactText } from './lib/redact.js';
+import {
+  calculateRiskScore,
+  generateRiskSummary,
+  evaluateComplianceTags,
+  generateAuditReport,
+} from './lib/risk.js';
 import {
   ENTITY_TYPES,
   REDACTION_MODES,
@@ -48,6 +55,7 @@ export default function App() {
   const [mode, setMode] = useState(REDACTION_MODES.FULL);
   const [typeModes, setTypeModes] = useState(DEFAULT_CUSTOM_TYPE_MODES);
   const [overrides, setOverrides] = useState({});
+  const [customRules, setCustomRules] = useState([]);
   const [enabledTypes, setEnabledTypes] = useState({
     [ENTITY_TYPES.EMAIL]: true,
     [ENTITY_TYPES.PHONE]: true,
@@ -55,6 +63,7 @@ export default function App() {
     [ENTITY_TYPES.PAN]: true,
     [ENTITY_TYPES.AADHAAR]: true,
     [ENTITY_TYPES.CREDIT_CARD]: true,
+    [ENTITY_TYPES.CUSTOM_RULE]: true,
   });
 
   // Enable subtle 3D card tilt and button interactive glows
@@ -141,10 +150,10 @@ export default function App() {
   // Pure memoized entity detection
   const detectionResult = useMemo(() => {
     if (!debouncedText) {
-      return { matches: [], luhnFailedCount: 0 };
+      return { matches: [], luhnFailedCount: 0, verhoeffFailedCount: 0 };
     }
-    return detectEntities(debouncedText, enabledTypes);
-  }, [debouncedText, enabledTypes]);
+    return detectEntities(debouncedText, enabledTypes, customRules);
+  }, [debouncedText, enabledTypes, customRules]);
 
   // Pure memoized redaction transformation
   const redactionResult = useMemo(() => {
@@ -158,6 +167,34 @@ export default function App() {
     });
   }, [debouncedText, detectionResult.matches, mode, typeModes, overrides]);
 
+  // Pure memoized risk score computation
+  const riskScore = useMemo(() => {
+    return calculateRiskScore(detectionResult.matches, overrides, enabledTypes);
+  }, [detectionResult.matches, overrides, enabledTypes]);
+
+  // Auto-generated plain English risk summary
+  const riskSummary = useMemo(() => {
+    return generateRiskSummary(detectionResult.matches, riskScore, mode);
+  }, [detectionResult.matches, riskScore, mode]);
+
+  // Regulatory compliance framework mapping (PCI-DSS, DPDP Act 2023, GDPR)
+  const complianceTags = useMemo(() => {
+    return evaluateComplianceTags(detectionResult.matches, overrides, enabledTypes);
+  }, [detectionResult.matches, overrides, enabledTypes]);
+
+  // Pure zero-PII audit report data object
+  const auditReportData = useMemo(() => {
+    return generateAuditReport({
+      mode,
+      matches: detectionResult.matches,
+      luhnFailedCount: detectionResult.luhnFailedCount,
+      verhoeffFailedCount: detectionResult.verhoeffFailedCount || 0,
+      excludedCount: redactionResult.excludedCount || 0,
+      riskScore,
+      complianceTags,
+    });
+  }, [mode, detectionResult, redactionResult.excludedCount, riskScore, complianceTags]);
+
   return (
     <div className="app-shell">
       <CustomCursor />
@@ -168,6 +205,11 @@ export default function App() {
           onTextChange={setRawText}
           fileName={fileName}
           onFileNameChange={setFileName}
+        />
+
+        <CustomRulesSection
+          rules={customRules}
+          onRulesChange={setCustomRules}
         />
 
         <ControlsBar
@@ -184,6 +226,9 @@ export default function App() {
           luhnFailedCount={detectionResult.luhnFailedCount}
           enabledTypes={enabledTypes}
           excludedCount={redactionResult.excludedCount || 0}
+          riskScore={riskScore}
+          riskSummary={riskSummary}
+          complianceTags={complianceTags}
         />
 
         <AuditView
@@ -200,6 +245,7 @@ export default function App() {
         <ExportBar
           sanitizedText={redactionResult.sanitizedText}
           fileName={fileName}
+          auditReportData={auditReportData}
         />
 
         {redactionResult.mapping && redactionResult.mapping.length > 0 && (

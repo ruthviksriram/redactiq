@@ -98,6 +98,7 @@ export function normalizeEntity(type, rawValue) {
  * Validated card > validated Aadhaar > PAN > IP > Email > Phone.
  */
 const TYPE_PRIORITY = {
+  [ENTITY_TYPES.CUSTOM_RULE]: 70,
   [ENTITY_TYPES.CREDIT_CARD]: 60,
   [ENTITY_TYPES.AADHAAR]: 50,
   [ENTITY_TYPES.PAN]: 40,
@@ -156,9 +157,9 @@ export function resolveOverlaps(candidates) {
  * @param {Object.<string, boolean>} [enabledTypes] - Optional map of enabled entity types.
  * @returns {DetectionResult} Detection result with validated matches and Luhn failure count.
  */
-export function detectEntities(text, enabledTypes = {}) {
+export function detectEntities(text, enabledTypes = {}, customRules = []) {
   if (typeof text !== 'string' || text.length === 0) {
-    return { matches: [], luhnFailedCount: 0 };
+    return { matches: [], luhnFailedCount: 0, verhoeffFailedCount: 0 };
   }
 
   // Default all types to enabled if not specified
@@ -166,6 +167,7 @@ export function detectEntities(text, enabledTypes = {}) {
 
   const rawCandidates = [];
   let luhnFailedCount = 0;
+  let verhoeffFailedCount = 0;
 
   // 1. CREDIT CARDS (13-19 digits, validated with Luhn algorithm)
   const cardCandidates = text.matchAll(CARD_CANDIDATE_REGEX);
@@ -205,6 +207,8 @@ export function detectEntities(text, enabledTypes = {}) {
           end: match.index + value.length,
           normalized: normalizeEntity(ENTITY_TYPES.AADHAAR, value),
         });
+      } else {
+        verhoeffFailedCount++;
       }
     }
   }
@@ -299,11 +303,49 @@ export function detectEntities(text, enabledTypes = {}) {
     }
   }
 
+  // 7. USER-DEFINED CUSTOM RULES (Keywords or simple regex)
+  if (isEnabled(ENTITY_TYPES.CUSTOM_RULE) && Array.isArray(customRules)) {
+    for (const rule of customRules) {
+      if (!rule) continue;
+      const pattern = typeof rule === 'string' ? rule : rule.pattern;
+      const isRegex = typeof rule === 'object' ? Boolean(rule.isRegex) : false;
+
+      if (!pattern || !pattern.trim()) continue;
+
+      try {
+        let rx;
+        if (isRegex) {
+          rx = new RegExp(pattern.trim(), 'gi');
+        } else {
+          // Exact keyword, case-insensitive (escaped regex)
+          const escaped = pattern.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          rx = new RegExp(`(?<![a-zA-Z0-9])${escaped}(?![a-zA-Z0-9])`, 'gi');
+        }
+
+        const ruleMatches = text.matchAll(rx);
+        for (const match of ruleMatches) {
+          const value = match[0];
+          if (!value) continue;
+          rawCandidates.push({
+            type: ENTITY_TYPES.CUSTOM_RULE,
+            value,
+            start: match.index,
+            end: match.index + value.length,
+            normalized: value.toLowerCase(),
+          });
+        }
+      } catch {
+        // Safe error boundary: invalid regex patterns never crash the engine
+      }
+    }
+  }
+
   // Resolve overlaps
   const finalMatches = resolveOverlaps(rawCandidates);
 
   return {
     matches: finalMatches,
     luhnFailedCount,
+    verhoeffFailedCount,
   };
 }

@@ -147,7 +147,7 @@ export default function InputSection({ text, onTextChange, fileName, onFileNameC
           <button
             type="button"
             onClick={handleLoadSample}
-            className="btn btn-secondary btn-sm"
+            className="btn btn-primary btn-sm btn-3d"
             aria-label="Load pre-built realistic noisy sample with valid and invalid PII"
           >
             <svg
@@ -156,7 +156,7 @@ export default function InputSection({ text, onTextChange, fileName, onFileNameC
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
               aria-hidden="true"
@@ -171,7 +171,7 @@ export default function InputSection({ text, onTextChange, fileName, onFileNameC
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="btn btn-secondary btn-sm"
+            className="btn btn-secondary btn-sm btn-3d"
             aria-label="Upload a .txt or .csv file"
           >
             <svg

@@ -2,23 +2,29 @@ import React from 'react';
 
 /**
  * Top application header component.
- * Features app branding, privacy tagline, and a 100% client-side security badge.
+ * Features branding, privacy tagline, "100% Client-Side" badge, and theme switcher.
  *
+ * @param {Object} props
+ * @param {'dark'|'light'} props.theme - Active UI theme ('dark' or 'light').
+ * @param {function(): void} props.onToggleTheme - Theme toggle handler.
  * @returns {React.ReactElement} The Header component.
  */
-export default function Header() {
+export default function Header({ theme = 'dark', onToggleTheme }) {
+  const isDark = theme === 'dark';
+
   return (
     <header className="app-header" role="banner">
+      <div className="header-glow" aria-hidden="true"></div>
       <div className="header-container">
         <div className="brand-group">
           <div className="brand-logo" aria-hidden="true">
             <svg
-              width="28"
-              height="28"
+              width="24"
+              height="24"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
               className="shield-icon"
@@ -36,15 +42,16 @@ export default function Header() {
           </div>
         </div>
 
-        <div className="header-badges">
+        <div className="header-actions">
+          {/* 100% Client-side Security Badge */}
           <div
             className="client-side-badge"
             title="All detection and redaction executes strictly inside your browser memory."
           >
             <span className="pulsing-dot" aria-hidden="true"></span>
             <svg
-              width="14"
-              height="14"
+              width="13"
+              height="13"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -58,6 +65,56 @@ export default function Header() {
             </svg>
             <span className="badge-text">100% Client-Side</span>
           </div>
+
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            onClick={onToggleTheme}
+            className="theme-toggle-btn btn btn-icon"
+            aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+            aria-pressed={isDark}
+            title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+          >
+            {isDark ? (
+              // Sun icon for switching to light mode
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            ) : (
+              // Moon icon for switching to dark mode
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
     </header>

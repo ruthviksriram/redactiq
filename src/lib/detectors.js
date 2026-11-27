@@ -11,6 +11,21 @@ import {
   validateIPv6,
   validatePAN,
 } from './validators.js';
+import {
+  EMAIL_REGEX,
+  INDIAN_PHONE_REGEX,
+  INTL_PHONE_REGEX,
+  IPV4_CANDIDATE_REGEX,
+  IPV6_CANDIDATE_REGEX,
+  PAN_REGEX,
+  AADHAAR_CANDIDATE_REGEX,
+  CARD_CANDIDATE_REGEX,
+  normalizeEntity,
+} from './detectors/rules.js';
+import { resolveOverlaps } from './detectors/overlaps.js';
+
+// Re-export helpers for backward compatibility
+export { normalizeEntity, resolveOverlaps };
 
 /**
  * @typedef {Object} DetectedEntity
@@ -19,6 +34,7 @@ import {
  * @property {number} start - 0-based start character index in source text.
  * @property {number} end - 0-based end character index in source text.
  * @property {string} normalized - Normalized representation for comparison and pseudonymization.
+ * @property {boolean} [unverified] - True if pattern matches but failed strict algorithmic checksum.
  */
 
 /**
@@ -27,134 +43,6 @@ import {
  * @property {number} luhnFailedCount - Count of card-like numeric sequences that failed Luhn validation.
  * @property {number} verhoeffFailedCount - Count of 12-digit Aadhaar candidate sequences that failed Verhoeff checksum.
  */
-
-// Regex definitions with strict boundary constraints
-const EMAIL_REGEX =
-  /\b[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+\b/g;
-
-// Indian mobile: 10 digits starting 6-9, optional +91 / 0 prefix, optional spaces or dashes
-const INDIAN_PHONE_REGEX =
-  /(?<!\w|\+)(?:\+91[ -]?|0)?[6-9]\d{2}[ -]?\d{3}[ -]?\d{4}(?!\d)|(?<!\w|\+)(?:\+91[ -]?|0)?[6-9]\d{4}[ -]?\d{5}(?!\d)|(?<!\w|\+)(?:\+91[ -]?|0)?[6-9]\d{9}(?!\d)/g;
-
-// Common international format: e.g. +1 555-123-4567 or +1 (555) 123-4567 or +44 20 7946 0958
-const INTL_PHONE_REGEX =
-  /(?<!\w|\+)\+\d{1,3}[ -]?(?:\(\d{1,4}\)|\d{1,4})[ -]?\d{1,4}[ -]?\d{3,4}(?!\d)/g;
-
-// IPv4 octet candidate regex (handles terminal sentence periods and rejects 5-octet strings)
-const IPV4_CANDIDATE_REGEX =
-  /(?<!\d\.)(?<![a-zA-Z0-9])\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?!\.\d)(?![a-zA-Z0-9])/g;
-
-// IPv6 candidate regex
-const IPV6_CANDIDATE_REGEX =
-  /(?<!\w|:)(?:[0-9a-fA-F]{1,4}:){2,7}[0-9a-fA-F]{1,4}(?!\w|:)|(?<!\w|:)::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}(?!\w|:)|(?<!\w|:)(?:[0-9a-fA-F]{1,4}:){1,7}:(?!\w|:)/g;
-
-// Indian PAN format: 5 letters + 4 digits + 1 letter
-const PAN_REGEX = /(?<![a-zA-Z0-9])[a-zA-Z]{5}[0-9]{4}[a-zA-Z](?![a-zA-Z0-9])/g;
-
-// Aadhaar: 12 digits, first digit 2-9, grouping 4-4-4, strictly isolated from adjacent digit sequences
-const AADHAAR_CANDIDATE_REGEX = /(?<!\d)(?<!\d[ -])[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}(?![ -]?\d)/g;
-
-// Credit / Debit card candidate: 13-19 digits with optional spaces or dashes
-const CARD_CANDIDATE_REGEX = /(?<!\d)(?:\d[ -]?){12,18}\d(?!\d)/g;
-
-/**
- * Normalizes an entity value based on its type.
- *
- * @param {string} type - Entity type.
- * @param {string} rawValue - Raw matched text.
- * @returns {string} Normalized value.
- */
-export function normalizeEntity(type, rawValue) {
-  switch (type) {
-    case ENTITY_TYPES.EMAIL:
-      return rawValue.toLowerCase().trim();
-
-    case ENTITY_TYPES.PAN:
-      return rawValue.toUpperCase().trim();
-
-    case ENTITY_TYPES.AADHAAR:
-      return rawValue.replace(/\D/g, '');
-
-    case ENTITY_TYPES.CREDIT_CARD:
-      return rawValue.replace(/\D/g, '');
-
-    case ENTITY_TYPES.IP:
-      return rawValue.toLowerCase().trim();
-
-    case ENTITY_TYPES.PHONE: {
-      const digits = rawValue.replace(/\D/g, '');
-      // For Indian numbers (+91 or 0 prefix), normalize to 10 digits
-      if (digits.length === 12 && digits.startsWith('91') && /^[6-9]/.test(digits.slice(2))) {
-        return digits.slice(2);
-      }
-      if (digits.length === 11 && digits.startsWith('0') && /^[6-9]/.test(digits.slice(1))) {
-        return digits.slice(1);
-      }
-      return digits;
-    }
-
-    default:
-      return rawValue.trim();
-  }
-}
-
-/**
- * Priority order for overlap resolution.
- * Higher number means higher priority.
- * Validated card > validated Aadhaar > PAN > IP > Email > Phone.
- */
-const TYPE_PRIORITY = {
-  [ENTITY_TYPES.CUSTOM_RULE]: 70,
-  [ENTITY_TYPES.CREDIT_CARD]: 60,
-  [ENTITY_TYPES.AADHAAR]: 50,
-  [ENTITY_TYPES.PAN]: 40,
-  [ENTITY_TYPES.IP]: 30,
-  [ENTITY_TYPES.EMAIL]: 20,
-  [ENTITY_TYPES.PHONE]: 10,
-};
-
-/**
- * Resolves overlapping entity matches.
- * Prioritizes:
- * 1. Type priority (CARD > AADHAAR > PAN > IP > EMAIL > PHONE)
- * 2. Longer length
- * 3. Earlier starting position
- *
- * @param {DetectedEntity[]} candidates - Array of raw matches.
- * @returns {DetectedEntity[]} Non-overlapping matches sorted ascending by start index.
- */
-export function resolveOverlaps(candidates) {
-  if (!candidates || candidates.length === 0) return [];
-
-  // Sort candidates by priority desc, length desc, start asc
-  const sorted = [...candidates].sort((a, b) => {
-    const priorityA = TYPE_PRIORITY[a.type] || 0;
-    const priorityB = TYPE_PRIORITY[b.type] || 0;
-    if (priorityB !== priorityA) return priorityB - priorityA;
-
-    const lenA = a.end - a.start;
-    const lenB = b.end - b.start;
-    if (lenB !== lenA) return lenB - lenA;
-
-    return a.start - b.start;
-  });
-
-  const accepted = [];
-
-  for (const candidate of sorted) {
-    // Check if candidate overlaps with any already accepted match
-    const hasOverlap = accepted.some(
-      (curr) => Math.max(curr.start, candidate.start) < Math.min(curr.end, candidate.end)
-    );
-
-    if (!hasOverlap) {
-      accepted.push(candidate);
-    }
-  }
-
-  // Return sorted by start position
-  return accepted.sort((a, b) => a.start - b.start);
-}
 
 /**
  * Scans text and detects all supported PII entities with strict validation.

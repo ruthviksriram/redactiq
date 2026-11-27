@@ -102,3 +102,10 @@ Start Phase 1 only: set up the Vite + React project, then build constants.js, va
 ```
 *Note: Starting Phase 1 - setting up Vite + React + Vitest + ESLint, building constants, validators, detectors, redaction, sampleData, and unit tests.*
 
+## Prompt 3
+```
+Phase 1 looks good. Start Phase 2 only: build Header.jsx and InputSection.jsx (textarea, .txt/.csv upload with drag-and-drop and file-type check, 5 MB warning, and the "Load sample" button using sampleData.js). Wire them into App.jsx with the 200 ms debounce. Run the app, open it in the browser, test pasting, uploading and the sample button, fix any console errors, run `npm run build`, then commit to main and stop. Show me a screenshot of the app.
+```
+*Note: Starting Phase 2 - implementing Header.jsx, InputSection.jsx, drag-and-drop file upload with validation, 5MB warning, sample loader, 200ms debounce in App.jsx, and browser testing.*
+
+

@@ -186,6 +186,28 @@ Accent gradient: #F97316 -> #F43F5E (orange to rose) in dark mode, #EA580C -> #E
 ```
 *Note: Updated color palette: warm near-black background (#0A0705), warm off-white (#FFF9F5), orange-to-rose accent gradients, and changed IP highlight to high-contrast teal (#2DD4BF).*
 
+## Prompt 8
+```
+Replace the current accent palette (no logic, layout or test changes):
+
+Dark theme:
+- Background: deep navy #050B18, cards #0B1426 with a faint teal border
+- Accent gradient: #10B981 -> #14B8A6 (emerald to teal) for primary buttons, the active mode pill, the theme toggle, focus rings and the logo tile
+- Glow / cursor ring / header aurora: soft emerald-teal at low opacity
+- "100% Client-Side" badge: emerald
+
+Light theme:
+- Background: #F5F9FC, white cards with a faint navy border
+- Accent gradient: #047857 -> #0F766E (deeper, so text on it stays at least 4.5:1)
+- Headings in navy #0B1B3A
+
+Change the PHONE entity highlight colour to lime (#A3E635) so it does not clash with the green accent. If the IP highlight was changed to teal earlier, change it back to orange (#FB923C). Keep all other entity colours.
+
+Replace every old accent colour with these variables, check contrast in both themes, run `npm test`, `npm run lint` and `npm run build`, then commit to main and stop. Show me screenshots of both themes with the sample loaded.
+```
+*Note: Updated accent palette: deep navy #050B18 and #F5F9FC, emerald-teal accent gradients (#10B981 -> #14B8A6 / #047857 -> #0F766E), navy headings in light mode, lime phone highlights (#A3E635), and orange IP highlights (#FB923C).*
+
+
 
 
 

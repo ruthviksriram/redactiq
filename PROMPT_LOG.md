@@ -207,6 +207,21 @@ Replace every old accent colour with these variables, check contrast in both the
 ```
 *Note: Updated accent palette: deep navy #050B18 and #F5F9FC, emerald-teal accent gradients (#10B981 -> #14B8A6 / #047857 -> #0F766E), navy headings in light mode, lime phone highlights (#A3E635), and orange IP highlights (#FB923C).*
 
+## Prompt 9
+```
+The design is final. Start Phase 4. We deploy on Vercel (primary), with Cloud Run as an alternative.
+
+1. ExportBar.jsx: "Download sanitized file" (same format as input: .txt or .csv, named sanitized_<originalname>, or sanitized_output.txt for pasted text) and "Copy to clipboard". Both must use the plain redacted string from redact.js, NOT the on-screen text, so the small type labels (EMAIL, PHONE…) are never included. Add a unit test that the downloaded/copied text contains no type labels.
+2. MappingTable.jsx: visible only in pseudonymization mode, placeholder -> original, with a clear warning that it contains sensitive data and is never included in the download.
+3. vercel.json in the project root: "framework": "vite", "buildCommand": "npm run build", "outputDirectory": "dist", a rewrite so all routes fall back to /index.html, and headers for all routes: Content-Security-Policy (same as the build CSP), X-Content-Type-Options nosniff, X-Frame-Options DENY, Referrer-Policy no-referrer, Permissions-Policy, Strict-Transport-Security.
+4. Also keep a Cloud Run option: Dockerfile (multi-stage, node:20-alpine build -> nginx:alpine serving dist on port 8080), nginx.conf (listen 8080, SPA fallback, gzip, same security headers) and .dockerignore.
+5. README.md: replace the content with a full project README — problem, features, how detection works (regex + Luhn + Verhoeff), the 3 modes, privacy/security design, accessibility, tech stack, how to run, how to test, deployment (Vercel primary, Cloud Run alternative), and a "Known limitations" section (e.g. personal names are not detected because that needs NLP/AI, which would break the client-side rule).
+6. Final pass: test every feature in both themes in the browser, including uploading a .csv file and downloading it, check the Problems tab shows 0 problems, run `npm test`, `npm run lint` and `npm run build`, update PROMPT_LOG.md, then commit to main.
+7. Check that node_modules and dist are NOT tracked by git (`git ls-files | grep -E "node_modules|dist"` must return nothing), then push to origin main. Show me the test results and the git push output.
+```
+*Note: Completed Phase 4 - implemented ExportBar.jsx, MappingTable.jsx with sensitive data warning, added unit test verifying sanitized exports contain no UI labels, added vercel.json with zero-trust headers, Dockerfile and nginx.conf for Cloud Run, comprehensive README.md, browser tested all features in both themes, verified 0 git tracking of node_modules/dist, and pushed to origin main.*
+
+
 
 
 

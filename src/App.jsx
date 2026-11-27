@@ -4,6 +4,8 @@ import InputSection from './components/InputSection.jsx';
 import ControlsBar from './components/ControlsBar.jsx';
 import SummaryBar from './components/SummaryBar.jsx';
 import AuditView from './components/AuditView.jsx';
+import ExportBar from './components/ExportBar.jsx';
+import MappingTable from './components/MappingTable.jsx';
 import CustomCursor from './components/CustomCursor.jsx';
 import { useCardTilt, useButtonGlow } from './lib/useEffects3D.js';
 import { detectEntities } from './lib/detectors.js';
@@ -139,6 +141,15 @@ export default function App() {
           replacements={redactionResult.replacements}
           mode={mode}
         />
+
+        <ExportBar
+          sanitizedText={redactionResult.sanitizedText}
+          fileName={fileName}
+        />
+
+        {mode === REDACTION_MODES.PSEUDONYM && (
+          <MappingTable mapping={redactionResult.mapping} />
+        )}
       </main>
     </div>
   );

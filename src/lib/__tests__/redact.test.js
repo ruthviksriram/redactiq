@@ -127,5 +127,36 @@ describe('redact.js', () => {
         expect(commaCount).toBe(2);
       }
     });
+
+    it('guarantees sanitized export/copy text contains no UI type labels or HTML tags', () => {
+      const text = 'Alert: user john@example.com logged in from 10.0.0.1 with card 4111 1111 1111 1111.';
+      const e1 = 'john@example.com';
+      const ip1 = '10.0.0.1';
+      const c1 = '4111 1111 1111 1111';
+
+      const s1 = text.indexOf(e1);
+      const s2 = text.indexOf(ip1);
+      const s3 = text.indexOf(c1);
+
+      const matches = [
+        { type: ENTITY_TYPES.EMAIL, value: e1, start: s1, end: s1 + e1.length, normalized: e1 },
+        { type: ENTITY_TYPES.IP, value: ip1, start: s2, end: s2 + ip1.length, normalized: ip1 },
+        { type: ENTITY_TYPES.CREDIT_CARD, value: c1, start: s3, end: s3 + c1.length, normalized: '4111111111111111' },
+      ];
+
+      for (const mode of [REDACTION_MODES.FULL, REDACTION_MODES.PARTIAL, REDACTION_MODES.PSEUDONYM]) {
+        const res = redactText(text, matches, mode);
+        // Verify output is strictly plain text without any HTML elements or UI badges
+        expect(res.sanitizedText).not.toMatch(/<[^>]*>/);
+        expect(res.sanitizedText).not.toContain('class="');
+        expect(res.sanitizedText).not.toContain('entity-type-tag');
+        expect(res.sanitizedText).not.toContain('hl-tag');
+        expect(res.sanitizedText).not.toContain('aria-label');
+
+        // Verify it never contains separate UI badge labels like " Payment Card" or " IP Address"
+        expect(res.sanitizedText).not.toContain('Payment Card');
+        expect(res.sanitizedText).not.toContain('IP Address');
+      }
+    });
   });
 });

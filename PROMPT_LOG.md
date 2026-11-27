@@ -151,6 +151,36 @@ Test both themes in the browser, check hover/focus states, run `npm test`, `npm 
 ```
 *Note: Completed full visual redesign with Vercel/Stripe quality dual themes (Premium Dark & Premium Light), 3D tactile buttons, glassy cards, radial header glow, segmented controls, zero-diagnostics cleanup in jsconfig.json and App.jsx, and automated browser capture.*
 
+## Prompt 6
+```
+Second redesign pass. Do not change any logic, detection or tests — only visuals.
+
+1. Open https://cosmicenterprises.co/ in the browser and study its custom cursor and its 3D / depth effects (tilt, parallax, glow, hover animations). Recreate a SIMILAR feel for RedactIQ in our own original code. Do not copy their code, images, logo or text.
+
+2. Custom cursor:
+- A small dot + a larger trailing ring that follows with smooth easing (requestAnimationFrame), grows and changes colour when hovering buttons, links and chips, and shrinks on click
+- Plain CSS + vanilla JS in its own component (CustomCursor.jsx), no libraries
+- ONLY enable it on devices with a fine pointer: @media (hover: hover) and (pointer: fine)
+- Keep the normal text cursor inside the textarea and the output panels
+- Fully disabled when prefers-reduced-motion is set
+- The cursor elements must be aria-hidden and pointer-events: none
+
+3. 3D effects (pick the ones that suit a security tool):
+- Cards: subtle 3D tilt toward the mouse (max about 4 degrees, perspective) with a moving light/glare highlight; reset smoothly on mouse leave
+- Buttons: keep the 3D lift/press effect, add a soft glow that follows the mouse position
+- Header: slow animated gradient or particle-style glow in the background (CSS only, low cost)
+- Subtle entrance animations for sections on load
+- Keep all effects lightweight (transform/opacity only, no layout thrashing) so efficiency stays high
+
+4. No external libraries, fonts or CDN links. Works in both dark and light themes.
+
+5. Keep accessibility: contrast at least 4.5:1, visible focus rings, keyboard navigation unaffected, everything disabled under prefers-reduced-motion.
+
+Test in the browser, run `npm test`, `npm run lint` and `npm run build`, make sure the Problems tab shows 0, then commit to main and stop. Show me screenshots.
+```
+*Note: Starting second visual redesign pass - implementing CustomCursor.jsx with requestAnimationFrame easing, 3D card tilt with specular glare, button mouse-follow glow, animated aurora header glow, and staggered section entrance animations.*
+
+
 
 
 

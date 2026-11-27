@@ -38,7 +38,7 @@ export default function AuditView({
 
       <div className="audit-split-grid">
         {/* Left Panel: Original Text */}
-        <div className="audit-panel original-panel">
+        <div className="audit-panel original-panel tilt-card">
           <div className="panel-header">
             <div className="panel-title-group">
               <span className="panel-dot original-dot" aria-hidden="true"></span>
@@ -78,7 +78,7 @@ export default function AuditView({
         </div>
 
         {/* Right Panel: Sanitized Output */}
-        <div className="audit-panel sanitized-panel">
+        <div className="audit-panel sanitized-panel tilt-card">
           <div className="panel-header">
             <div className="panel-title-group">
               <span className="panel-dot sanitized-dot" aria-hidden="true"></span>

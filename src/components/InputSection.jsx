@@ -108,7 +108,7 @@ export default function InputSection({ text, onTextChange, fileName, onFileNameC
   };
 
   return (
-    <section className="input-section" aria-labelledby="input-section-heading">
+    <section className="input-section tilt-card" aria-labelledby="input-section-heading">
       <div className="section-toolbar">
         <div className="toolbar-left">
           <h2 id="input-section-heading" className="section-title">

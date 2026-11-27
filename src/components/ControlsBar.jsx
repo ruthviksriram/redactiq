@@ -32,7 +32,7 @@ export default function ControlsBar({ mode, onModeChange, enabledTypes, onToggle
   ];
 
   return (
-    <section className="controls-bar" aria-labelledby="controls-heading">
+    <section className="controls-bar tilt-card" aria-labelledby="controls-heading">
       <h2 id="controls-heading" className="visually-hidden">
         Redaction Controls and Entity Filters
       </h2>

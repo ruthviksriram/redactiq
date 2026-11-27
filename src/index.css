@@ -17,7 +17,7 @@
   --bg-card-subtle: rgba(15, 23, 42, 0.6);
   --bg-input: #0b1120;
   --header-bg: rgba(7, 9, 14, 0.85);
-  --header-glow: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.18), transparent 70%);
+  --header-glow: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.22), transparent 70%);
 
   /* Borders & Dividers */
   --border-color: rgba(255, 255, 255, 0.08);
@@ -29,8 +29,8 @@
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
   --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.6), inset 0 1px 1px 0 rgba(255, 255, 255, 0.06);
   --shadow-card-hover: 0 18px 40px -12px rgba(0, 0, 0, 0.75), inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
-  --shadow-btn-3d: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.1) inset;
-  --shadow-btn-3d-hover: 0 6px 16px -2px rgba(56, 189, 248, 0.3), 0 2px 6px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  --shadow-btn-3d: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+  --shadow-btn-3d-hover: 0 6px 16px -2px rgba(56, 189, 248, 0.35), 0 2px 6px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.22) inset;
   --shadow-btn-3d-active: inset 0 2px 4px rgba(0, 0, 0, 0.5);
 
   /* Typography */
@@ -45,6 +45,7 @@
   --accent-gradient-hover: linear-gradient(135deg, #60a5fa 0%, #0369a1 100%);
   --accent-subtle: rgba(56, 189, 248, 0.12);
   --accent-border: rgba(56, 189, 248, 0.35);
+  --specular-glare: rgba(255, 255, 255, 0.08);
 
   /* System State Colors */
   --success-green: #34d399;
@@ -85,7 +86,7 @@
   --bg-card-subtle: #f1f5f9;
   --bg-input: #ffffff;
   --header-bg: rgba(255, 255, 255, 0.85);
-  --header-glow: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14, 165, 233, 0.12), transparent 70%);
+  --header-glow: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14, 165, 233, 0.15), transparent 70%);
 
   /* Borders & Dividers */
   --border-color: rgba(15, 23, 42, 0.1);
@@ -96,7 +97,7 @@
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 1px 3px 0 rgba(15, 23, 42, 0.04), inset 0 1px 0 0 #ffffff;
-  --shadow-card-hover: 0 12px 30px -4px rgba(15, 23, 42, 0.1), 0 2px 6px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 0 #ffffff;
+  --shadow-card-hover: 0 14px 32px -4px rgba(15, 23, 42, 0.12), 0 2px 6px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 0 #ffffff;
   --shadow-btn-3d: 0 2px 4px rgba(15, 23, 42, 0.12), 0 1px 0 rgba(255, 255, 255, 0.6) inset;
   --shadow-btn-3d-hover: 0 6px 16px -2px rgba(2, 132, 199, 0.25), 0 2px 6px rgba(15, 23, 42, 0.12), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
   --shadow-btn-3d-active: inset 0 2px 4px rgba(15, 23, 42, 0.15);
@@ -113,6 +114,7 @@
   --accent-gradient-hover: linear-gradient(135deg, #38bdf8 0%, #0369a1 100%);
   --accent-subtle: rgba(14, 165, 233, 0.1);
   --accent-border: rgba(14, 165, 233, 0.35);
+  --specular-glare: rgba(2, 132, 199, 0.08);
 
   /* System State Colors */
   --success-green: #059669;
@@ -160,6 +162,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 200ms ease, color 200ms ease;
+  overflow-x: hidden;
 }
 
 /* Screen Reader Utility */
@@ -186,6 +189,89 @@ a:focus-visible,
 }
 
 /* --------------------------------------------------------------------------
+   Custom Cursor (Cosmic Style: Dot + Trailing Eased Ring)
+   -------------------------------------------------------------------------- */
+@media (hover: hover) and (pointer: fine) {
+  .custom-cursor-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 99999;
+  }
+
+  .cursor-dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 50%;
+    background-color: var(--accent-cyan);
+    box-shadow: 0 0 10px var(--accent-cyan);
+    pointer-events: none;
+    will-change: transform;
+    transition: opacity 150ms ease, transform 0.04s linear;
+  }
+
+  .cursor-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent-cyan);
+    background-color: transparent;
+    pointer-events: none;
+    will-change: transform;
+    transition: width 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                height 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                margin 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 180ms ease,
+                background-color 180ms ease,
+                opacity 150ms ease;
+  }
+
+  /* Ring on Interactive Hover */
+  .custom-cursor-container.cursor-hovered .cursor-ring {
+    width: 48px;
+    height: 48px;
+    margin: -24px 0 0 -24px;
+    border-color: var(--accent-cyan);
+    background-color: var(--accent-subtle);
+  }
+
+  /* Ring on Click (Press) */
+  .custom-cursor-container.cursor-clicking .cursor-ring {
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    background-color: var(--accent-subtle);
+  }
+
+  /* Subtle Fade over Text Elements to Preserve OS I-Beam */
+  .custom-cursor-container.cursor-text-target .cursor-ring {
+    opacity: 0.15;
+    border-style: dashed;
+  }
+
+  .custom-cursor-container.cursor-text-target .cursor-dot {
+    opacity: 0.3;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .custom-cursor-container {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
    App Shell & Layout
    -------------------------------------------------------------------------- */
 .app-shell {
@@ -208,7 +294,37 @@ a:focus-visible,
 }
 
 /* --------------------------------------------------------------------------
-   Header & Radial Glow
+   Entrance Stagger Animations
+   -------------------------------------------------------------------------- */
+@keyframes sectionEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.input-section {
+  animation: sectionEntrance 450ms cubic-bezier(0.16, 1, 0.3, 1) 0ms backwards;
+}
+
+.controls-bar {
+  animation: sectionEntrance 450ms cubic-bezier(0.16, 1, 0.3, 1) 70ms backwards;
+}
+
+.summary-bar {
+  animation: sectionEntrance 450ms cubic-bezier(0.16, 1, 0.3, 1) 140ms backwards;
+}
+
+.audit-view-section {
+  animation: sectionEntrance 450ms cubic-bezier(0.16, 1, 0.3, 1) 210ms backwards;
+}
+
+/* --------------------------------------------------------------------------
+   Header & Aurora Animated Glow
    -------------------------------------------------------------------------- */
 .app-header {
   position: sticky;
@@ -223,14 +339,26 @@ a:focus-visible,
 
 .header-glow {
   position: absolute;
-  top: 0;
+  top: -40px;
   left: 0;
   right: 0;
-  height: 180px;
+  height: 220px;
   background: var(--header-glow);
   pointer-events: none;
   z-index: -1;
-  transition: background 200ms ease;
+  will-change: transform, opacity;
+  animation: auroraPulse 12s ease-in-out infinite;
+}
+
+@keyframes auroraPulse {
+  0%, 100% {
+    transform: scale(1) translate3d(0, 0, 0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.06) translate3d(0, -6px, 0);
+    opacity: 1;
+  }
 }
 
 .header-container {
@@ -362,9 +490,10 @@ a:focus-visible,
 }
 
 /* --------------------------------------------------------------------------
-   3D Buttons & Controls
+   3D Buttons & Tactile Interaction
    -------------------------------------------------------------------------- */
 .btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -377,6 +506,7 @@ a:focus-visible,
   border: 1px solid transparent;
   transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
   letter-spacing: -0.01em;
+  overflow: hidden;
 }
 
 .btn-sm {
@@ -398,6 +528,23 @@ a:focus-visible,
 .btn-3d:active {
   transform: translateY(1px);
   box-shadow: var(--shadow-btn-3d-active);
+}
+
+/* Mouse-following soft button glow */
+.btn-3d::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle 80px at var(--btn-x, 50%) var(--btn-y, 50%), rgba(255, 255, 255, 0.22), transparent 75%);
+  opacity: 0;
+  transition: opacity 160ms ease;
+  z-index: 2;
+}
+
+.btn-3d:hover::after {
+  opacity: 1;
 }
 
 /* Primary Button (Accent Gradient) */
@@ -439,8 +586,28 @@ a:focus-visible,
 }
 
 /* --------------------------------------------------------------------------
-   Cards & Glassmorphism
+   3D Tilt Cards with Specular Light Glare
    -------------------------------------------------------------------------- */
+.tilt-card {
+  transform: perspective(1200px) rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 250ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tilt-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(circle 420px at var(--glare-x, 50%) var(--glare-y, 50%), var(--specular-glare), transparent 75%);
+  opacity: var(--glare-opacity, 0);
+  transition: opacity 250ms ease;
+  z-index: 1;
+}
+
 .input-section,
 .controls-bar,
 .summary-bar,
@@ -451,12 +618,16 @@ a:focus-visible,
   border: var(--card-border);
   border-radius: 16px;
   box-shadow: var(--shadow-card);
-  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 200ms ease, border-color 200ms ease;
+  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 200ms ease,
+              border-color 200ms ease;
 }
 
 .input-section:hover,
 .controls-bar:hover,
-.summary-bar:hover {
+.summary-bar:hover,
+.audit-panel:hover {
   box-shadow: var(--shadow-card-hover);
 }
 
@@ -1071,6 +1242,22 @@ a:focus-visible,
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transform: none !important;
+  }
+
+  .custom-cursor-container {
+    display: none !important;
+  }
+
+  .tilt-card {
+    transform: none !important;
+  }
+
+  .tilt-card::before {
+    display: none !important;
+  }
+
+  .btn-3d:hover {
     transform: none !important;
   }
 }

@@ -31,7 +31,7 @@ export default function SummaryBar({ matches, luhnFailedCount, enabledTypes }) {
   const totalCount = matches.length;
 
   return (
-    <section className="summary-bar" aria-labelledby="summary-heading">
+    <section className="summary-bar tilt-card" aria-labelledby="summary-heading">
       <h2 id="summary-heading" className="visually-hidden">
         Detection Summary
       </h2>

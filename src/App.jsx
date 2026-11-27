@@ -4,6 +4,8 @@ import InputSection from './components/InputSection.jsx';
 import ControlsBar from './components/ControlsBar.jsx';
 import SummaryBar from './components/SummaryBar.jsx';
 import AuditView from './components/AuditView.jsx';
+import CustomCursor from './components/CustomCursor.jsx';
+import { useCardTilt, useButtonGlow } from './lib/useEffects3D.js';
 import { detectEntities } from './lib/detectors.js';
 import { redactText } from './lib/redact.js';
 import { ENTITY_TYPES, REDACTION_MODES } from './lib/constants.js';
@@ -11,7 +13,7 @@ import { ENTITY_TYPES, REDACTION_MODES } from './lib/constants.js';
 /**
  * Main application coordinator component for RedactIQ.
  * Seamlessly manages raw input, 200ms debounce, entity filters, redaction mode,
- * detection computation, live side-by-side audit view, and theme toggle.
+ * detection computation, live side-by-side audit view, theme toggle, and 3D visual effects.
  *
  * @returns {JSX.Element} The main App view.
  */
@@ -45,6 +47,10 @@ export default function App() {
     [ENTITY_TYPES.AADHAAR]: true,
     [ENTITY_TYPES.CREDIT_CARD]: true,
   });
+
+  // Enable subtle 3D card tilt and button interactive glows
+  useCardTilt();
+  useButtonGlow();
 
   // Keep document attribute and localStorage in sync with theme state
   useEffect(() => {
@@ -103,6 +109,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <CustomCursor />
       <Header theme={theme} onToggleTheme={handleToggleTheme} />
       <main className="main-content" id="main-content">
         <InputSection

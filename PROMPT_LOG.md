@@ -1,0 +1,104 @@
+# Prompt Log
+
+## Prompt 1
+```
+ROLE
+You are a senior security engineer and frontend developer. Build a hackathon MVP that must work perfectly in a live demo. It is scored automatically on: code quality, security, efficiency, testing, accessibility, problem-statement alignment and Google services usage. Optimise for all of them.
+
+PROBLEM
+People share logs, resumes, support tickets and clinical notes that contain PII. Build "RedactIQ": a browser-based tool where users paste text or upload a .txt/.csv file, and the app detects, classifies and redacts PII ENTIRELY ON THE CLIENT SIDE. No data may ever be sent to any server or external API.
+
+TECH STACK (do not add anything else)
+- Vite + React (JavaScript), plain CSS
+- No backend, no external APIs, no AI API calls, no analytics, no CDN links, no external fonts (use system fonts)
+- Vitest for unit tests, ESLint for linting
+
+1. DETECTION ENGINE (src/lib/detectors.js — pure functions, no React)
+Detect and classify these entity types, each with its own colour:
+- EMAIL: standard email addresses
+- PHONE: Indian mobile numbers (10 digits starting 6-9, optional +91 / 0 prefix, spaces or dashes allowed) and common international formats like +1 555-123-4567
+- IP: IPv4 with every octet validated 0-255 (reject 999.1.1.1); also IPv6 if simple to add
+- PAN: Indian PAN format [A-Z]{5}[0-9]{4}[A-Z], case-insensitive, 4th letter must be one of P,C,H,F,A,T,B,L,J,G
+- AADHAAR: 12 digits, first digit 2-9, optionally grouped 4-4-4 with spaces or dashes, VALIDATED WITH THE VERHOEFF CHECKSUM
+- CREDIT_CARD: 13-19 digits, optionally separated by spaces or dashes, VALIDATED WITH THE LUHN ALGORITHM. Random 16-digit numbers that fail Luhn must NOT be flagged.
+Rules:
+- Return a list of matches: { type, value, start, end, normalized }
+- normalized = lowercase for emails; digits only for phone/card/Aadhaar; uppercase for PAN
+- Resolve overlaps so no two matches overlap (prefer the longer, validated match; card > aadhaar > phone)
+- Use word boundaries so numbers inside longer numbers are not partly matched
+- Also return how many card-like numbers failed Luhn
+
+2. REDACTION MODES (src/lib/redact.js)
+- Full Mask: replace each entity with [REDACTED_<TYPE>] e.g. [REDACTED_EMAIL]
+- Partial Mask: keep a little context:
+  email j***@gmail.com · phone XXXXXX3210 · card XXXX-XXXX-XXXX-1234 · Aadhaar XXXX-XXXX-1234 · PAN XXXXX1234X · IP 192.168.XXX.XXX
+- Consistent Pseudonymization: the same entity always maps to the same placeholder across the whole document, using its normalized value (so "+91 98765 43210" and "9876543210" are the same person): EMAIL_01, PHONE_01, CARD_01, AADHAAR_01, PAN_01, IP_01, numbered in order of first appearance
+- Replacement text must never contain commas, so CSV structure stays intact
+
+3. INPUT
+- Large textarea to paste text
+- Upload button + drag-and-drop for .txt and .csv files only (read with FileReader, show the file name; reject other types with a friendly message)
+- "Load sample" button that fills a realistic noisy sample (a support ticket + log lines + a small CSV-style block) containing: repeated emails, Indian phones in different formats, valid and invalid IPs, valid PANs, Aadhaar numbers that PASS Verhoeff and one that fails, credit cards that PASS Luhn (e.g. 4111 1111 1111 1111) and a random 16-digit number that FAILS Luhn. Verify every sample value with the validators.
+
+4. AUDIT VIEW
+- Mode selector (3 options) and checkboxes to turn each entity type on/off
+- Live side-by-side view: left = original text with detected entities highlighted in their type colour (show the type label too); right = sanitized output with the replacements highlighted. Updates instantly when text, mode or toggles change.
+- Summary bar with a count per entity type and a total
+- Note under the counts: "Luhn-failed numbers ignored: N"
+- In pseudonymization mode, show a mapping table (placeholder -> original) with a warning that it contains sensitive data and is NOT included in the download
+
+5. EXPORT
+- 1-click "Download sanitized file": same format as the input (.txt or .csv), named sanitized_<originalname> (or sanitized_output.txt for pasted text)
+- "Copy to clipboard" button
+
+6. DESIGN
+- Clean, professional security-tool look; dark theme with one accent colour; header with the app name, tagline "Redact PII. Nothing leaves your browser." and a "100% client-side" badge
+- Responsive: on mobile, the two panels stack vertically
+- Accessible: semantic HTML, labels, aria-labels on icon buttons, aria-live region for the counts, contrast of at least 4.5:1, keyboard navigation, visible focus states; colours are never the only signal
+- Empty state, friendly error messages, no crashes on empty input or huge files (warn above 5 MB)
+
+7. CODE QUALITY, SECURITY, EFFICIENCY, TESTING
+- Clean, modular code: components in src/components, logic in src/lib; JSDoc comments on every function in src/lib; no unused code or console.logs
+- ESLint (recommended React config); `npm run lint` must pass with zero errors
+- Never use dangerouslySetInnerHTML; render highlights as React elements so user text can never run as HTML
+- The pseudonymization mapping is kept only in memory, never saved or downloaded; no secrets anywhere in the repo
+- Content-Security-Policy (default-src 'self'; connect-src 'none'; style-src 'self' 'unsafe-inline'; no inline scripts) applied ONLY in the production build (nginx header and the built index.html), NOT in the Vite dev server, so live reload keeps working
+- Debounce re-detection while typing (about 200 ms) and use useMemo for detection results; a 1 MB text must not freeze the page
+- Vitest unit tests in src/lib/__tests__ covering: each detector (valid and invalid cases), Luhn, Verhoeff, overlap resolution, all 3 redaction modes, and pseudonymization consistency; `npm test` script; all tests must pass
+
+8. DEPLOYMENT (Google Cloud Run)
+- Multi-stage Dockerfile: stage 1 node:20-alpine runs npm ci and npm run build; stage 2 nginx:alpine serves /dist on port 8080
+- nginx.conf: listen 8080, SPA fallback to index.html, gzip on, security headers (Content-Security-Policy, X-Content-Type-Options nosniff, X-Frame-Options DENY, Referrer-Policy no-referrer, Permissions-Policy)
+- .dockerignore with node_modules, dist, .git
+- README.md: features, privacy design, how to run, how to test, and a Deployment section describing Cloud Run + Cloud Build
+
+9. GIT RULES
+- This folder is a cloned public GitHub repo. Work ONLY on the main branch. Never create other branches.
+- Before the first commit, create a .gitignore with node_modules, dist, .env and .DS_Store
+- The repo must stay under 10 MB: never commit node_modules, build output or large files
+- Keep the existing README.md and replace its content with the project README at the end
+- Create PROMPT_LOG.md and append every prompt I send you, word for word, with a one-line note on what you did
+- Commit after each working phase with a clear message, but do NOT push until I ask
+
+PROCESS (follow strictly)
+1. First, write an implementation plan: file structure, components and build phases. Then STOP and wait for my approval.
+2. Build in this order, one phase at a time, stopping after each to show me:
+   Phase 1: project setup, detection engine, validators, redaction logic and unit tests (all tests must pass)
+   Phase 2: input UI (paste, upload, sample loader)
+   Phase 3: redaction modes UI, side-by-side view and counts
+   Phase 4: export, mapping table, polish, accessibility, Dockerfile, nginx.conf, README
+3. After every phase, run the app in the browser, test it, fix any console errors, run `npm run build` once to confirm the production build works, then commit.
+```
+*Note: Created .gitignore, initialized PROMPT_LOG.md, and drafted detailed implementation plan for user review.*
+
+## Prompt 2
+```
+Approved, with these changes:
+1. Do NOT put the CSP meta tag directly in index.html. Add it only at build time with a small Vite plugin (transformIndexHtml with apply: 'build'), plus the nginx header. The dev server must have no CSP.
+2. Entity highlights must use dark text on the light highlight colours so contrast stays at least 4.5:1.
+3. Add one test that runs the detectors on sampleData.js and checks the expected count for each entity type.
+
+Start Phase 1 only: set up the Vite + React project, then build constants.js, validators.js, detectors.js, redact.js, sampleData.js and the unit tests. Run `npm test` and `npm run lint`, make sure both pass, commit to main and stop. Show me the test results.
+```
+*Note: Starting Phase 1 - setting up Vite + React + Vitest + ESLint, building constants, validators, detectors, redaction, sampleData, and unit tests.*
+

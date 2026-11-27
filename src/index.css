@@ -1,0 +1,48 @@
+:root {
+  --bg-primary: #0b0f19;
+  --bg-secondary: #111827;
+  --bg-card: #1f2937;
+  --bg-input: #0f172a;
+  --border-color: #374151;
+  --border-focus: #38bdf8;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --accent-cyan: #38bdf8;
+  --accent-cyan-hover: #0ea5e9;
+
+  /* Entity Highlight Colors: light backgrounds with high-contrast dark text */
+  --hl-email-bg: #7dd3fc;
+  --hl-email-text: #082f49;
+  --hl-phone-bg: #86efac;
+  --hl-phone-text: #052e16;
+  --hl-ip-bg: #fdba74;
+  --hl-ip-text: #431407;
+  --hl-pan-bg: #d8b4fe;
+  --hl-pan-text: #3b0764;
+  --hl-aadhaar-bg: #fde047;
+  --hl-aadhaar-text: #422006;
+  --hl-card-bg: #f9a8d4;
+  --hl-card-text: #500724;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  color-scheme: dark;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}

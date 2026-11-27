@@ -103,8 +103,11 @@ export default function HighlightedText({
         onKeyDown={handleKeyDown}
       >
         <span className="entity-text">{tokenText}</span>
-        <span className="entity-type-tag" aria-label={`Type: ${meta.label}`}>
-          {span.type}
+        <span
+          className={`entity-type-tag ${span.unverified ? 'is-unverified' : ''}`}
+          aria-label={`Type: ${meta.label}${span.unverified ? ' (unverified)' : ''}`}
+        >
+          {span.unverified ? `${span.type} (unverified)` : span.type}
         </span>
         {hasOverride && (
           <span className="override-badge-marker" aria-label={`Override: ${activeOverride}`}>

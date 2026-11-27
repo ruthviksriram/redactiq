@@ -186,6 +186,7 @@ export function redactText(text, matches, modeOrOptions = REDACTION_MODES.FULL, 
       placeholder,
       effectiveMode,
       isExcluded,
+      unverified: Boolean(match.unverified),
     };
   });
 
@@ -194,7 +195,7 @@ export function redactText(text, matches, modeOrOptions = REDACTION_MODES.FULL, 
   let cursor = 0;
   const replacements = [];
 
-  for (const { match, placeholder, effectiveMode, isExcluded } of matchReplacements) {
+  for (const { match, placeholder, effectiveMode, isExcluded, unverified } of matchReplacements) {
     // Append non-PII text between previous match and this one
     sanitizedText += text.slice(cursor, match.start);
 
@@ -211,6 +212,7 @@ export function redactText(text, matches, modeOrOptions = REDACTION_MODES.FULL, 
       end: endInSanitized,
       mode: effectiveMode,
       isExcluded,
+      unverified,
     });
 
     cursor = match.end;

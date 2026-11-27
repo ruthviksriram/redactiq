@@ -19,11 +19,13 @@ import RiskMeter from './RiskMeter.jsx';
 export default function SummaryBar({
   matches,
   luhnFailedCount = 0,
+  verhoeffFailedCount = 0,
   enabledTypes = {},
   excludedCount = 0,
   riskScore,
   riskSummary,
   complianceTags = [],
+  strictChecksum = true,
 }) {
   // Aggregate counts per entity type
   const countsByType = {};
@@ -130,7 +132,7 @@ export default function SummaryBar({
           : `${totalCount} PII entities detected, risk level ${riskScore?.level || 'Low'}.`}
       </div>
 
-      {/* Note under counts regarding Luhn validation failures */}
+      {/* Note under counts regarding Checksum validation failures */}
       <div className="luhn-failed-note" role="note">
         <svg
           width="15"
@@ -147,12 +149,25 @@ export default function SummaryBar({
           <line x1="12" y1="8" x2="12" y2="12" />
           <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
-        <span className="luhn-note-highlight">
-          Luhn-failed numbers ignored: {luhnFailedCount}
-        </span>
-        <span className="luhn-note-detail">
-          (Random 13–19 digit sequences failing the Luhn algorithm are safely excluded to prevent false positives)
-        </span>
+        {strictChecksum ? (
+          <>
+            <span className="luhn-note-highlight">
+              Checksum-failed numbers ignored: {luhnFailedCount} cards (Luhn), {verhoeffFailedCount} Aadhaar-like (Verhoeff)
+            </span>
+            <span className="luhn-note-detail">
+              (Numbers matching card or Aadhaar patterns that fail checksum algorithms are excluded to prevent false positives. Turn off strict validation to redact them anyway.)
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="luhn-note-highlight">
+              Strict checksum validation off: {luhnFailedCount} cards (Luhn), {verhoeffFailedCount} Aadhaar-like (Verhoeff) detected and redacted as unverified
+            </span>
+            <span className="luhn-note-detail">
+              (Maximum caution active: numbers matching card or Aadhaar formats are redacted even if checksum validation fails.)
+            </span>
+          </>
+        )}
       </div>
     </section>
   );

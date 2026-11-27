@@ -260,6 +260,27 @@ For both parts: test in the browser with the sample in both themes, keep the Pro
 ```
 *Note: Completed Part 2 - built risk.js with 0-100 weighted scoring and plain-English summary generator, RiskMeter.jsx component, regulatory compliance framework badges (PCI-DSS, DPDP, GDPR), CustomRulesSection.jsx for keywords and safe regex patterns, zero-PII JSON audit report downloader in ExportBar.jsx, 13 new unit tests in risk.test.js (61 passing tests total), 0 ESLint errors/warnings, browser verification in dual themes, and pushed to origin main.*
 
+## Prompt 11
+```
+Fix these issues. Do not change anything else.
+
+1. Light theme default: make the Premium Light theme the default on first visit (ignore prefers-color-scheme). Keep the toggle working and still remember the user's choice in localStorage.
+
+2. Aadhaar-like numbers that fail Verhoeff are currently ignored silently. Track them like Luhn failures:
+- detectors.js returns a verhoeffFailedCount (12-digit, first digit 2-9, 4-4-4 pattern, but failing Verhoeff)
+- Rename the notice to "Checksum-failed numbers ignored: N cards (Luhn), M Aadhaar-like (Verhoeff)" with a short explanation
+- Add a "Strict checksum validation" toggle (on by default). When turned off, numbers that match the card or Aadhaar FORMAT but fail the checksum are also detected and redacted, marked as "unverified" in the label. This lets users choose maximum caution.
+- Include verhoeffFailedCount in the audit report
+- Add unit tests for verhoeffFailedCount and for strict mode on/off
+
+3. Risk summary wording: never say "Safe to transmit". When nothing is detected, say "No PII detected by the active rules. Review the text before sharing." If checksum-failed numbers exist, add "N number(s) look like IDs but failed validation — review them or turn off strict validation."
+
+4. The "Download audit report (JSON)" button is missing its button styles (no background, border, padding or 3D/hover effect). Give it the same secondary button style as "Copy to clipboard", with the same height and alignment, in both themes. Also replace the 💾 emoji in the Export section heading with a line icon that matches the other icons. Check every other button in the app for the same problem and fix any that are unstyled.
+
+Run `npm test`, `npm run lint` and `npm run build`, test in the browser in both themes, update PROMPT_LOG.md and the README, commit to main and push.
+```
+*Note: Completed fixes - set Light theme as initial visit default while preserving toggle and localStorage persistence; added Verhoeff failure tracking (`verhoeffFailedCount`) for 12-digit Aadhaar candidates; added "Strict checksum validation" toggle in ControlsBar with non-strict redaction of pattern-matching cards/Aadhaar labeled as "unverified"; updated summary notice to "Checksum-failed numbers ignored: N cards (Luhn), M Aadhaar-like (Verhoeff)"; updated risk guidance wording to eliminate "Safe to transmit" and include checksum failure advisory; styled "Download audit report (JSON)" button identically to secondary export buttons; replaced 💾 with an SVG line icon; added unit tests in detectors.test.js, sampleData.test.js, and risk.test.js (64 passing tests).*
+
 
 
 

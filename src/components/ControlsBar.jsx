@@ -21,6 +21,8 @@ export default function ControlsBar({
   onTypeModeChange,
   enabledTypes,
   onToggleType,
+  strictChecksum = true,
+  onStrictChecksumChange,
 }) {
   const modes = [
     {
@@ -157,6 +159,41 @@ export default function ControlsBar({
             );
           })}
         </div>
+      </div>
+
+      {/* Strict Checksum Validation Control */}
+      <div className="control-group strict-checksum-group">
+        <label className="strict-toggle-row" htmlFor="strict-checksum-toggle">
+          <input
+            id="strict-checksum-toggle"
+            type="checkbox"
+            className="strict-toggle-input"
+            checked={strictChecksum}
+            onChange={(e) => onStrictChecksumChange && onStrictChecksumChange(e.target.checked)}
+            aria-describedby="strict-checksum-desc"
+          />
+          <span className="strict-toggle-box" aria-hidden="true">
+            <svg
+              className="strict-toggle-check"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </span>
+          <div className="strict-toggle-labels">
+            <span className="strict-toggle-title">Strict checksum validation</span>
+            <span id="strict-checksum-desc" className="strict-toggle-description">
+              Verify payment cards via Luhn and Aadhaar via Verhoeff. Turn off to detect &amp; redact unverified pattern matches.
+            </span>
+          </div>
+        </label>
       </div>
     </section>
   );

@@ -45,8 +45,8 @@ const IPV6_CANDIDATE_REGEX = /(?<!\w|:)(?:[0-9a-fA-F]{1,4}:){2,7}[0-9a-fA-F]{1,4
 // Indian PAN format: 5 letters + 4 digits + 1 letter
 const PAN_REGEX = /(?<![a-zA-Z0-9])[a-zA-Z]{5}[0-9]{4}[a-zA-Z](?![a-zA-Z0-9])/g;
 
-// Aadhaar: 12 digits, first digit 2-9, optional grouping 4-4-4
-const AADHAAR_CANDIDATE_REGEX = /(?<!\d)[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}(?!\d)/g;
+// Aadhaar: 12 digits, first digit 2-9, grouping 4-4-4, strictly isolated from adjacent digit sequences
+const AADHAAR_CANDIDATE_REGEX = /(?<!\d)(?<!\d[ -])[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}(?![ -]?\d)/g;
 
 // Credit / Debit card candidate: 13-19 digits with optional spaces or dashes
 const CARD_CANDIDATE_REGEX = /(?<!\d)(?:\d[ -]?){12,18}\d(?!\d)/g;
@@ -155,12 +155,17 @@ export function resolveOverlaps(candidates) {
  *
  * @param {string} text - The input text to scan.
  * @param {Object.<string, boolean>} [enabledTypes] - Optional map of enabled entity types.
- * @returns {DetectionResult} Detection result with validated matches and Luhn failure count.
+ * @param {Array<string|{pattern: string, isRegex?: boolean}>} [customRules] - User-defined custom rules.
+ * @param {boolean|{ strict?: boolean }} [options] - Detection configuration options (e.g. strict checksum mode).
+ * @returns {DetectionResult} Detection result with validated matches and failure counts.
  */
-export function detectEntities(text, enabledTypes = {}, customRules = []) {
+export function detectEntities(text, enabledTypes = {}, customRules = [], options = {}) {
   if (typeof text !== 'string' || text.length === 0) {
     return { matches: [], luhnFailedCount: 0, verhoeffFailedCount: 0 };
   }
+
+  const { strict = true } =
+    typeof options === 'boolean' ? { strict: options } : options || {};
 
   // Default all types to enabled if not specified
   const isEnabled = (type) => enabledTypes[type] !== false;
@@ -185,30 +190,52 @@ export function detectEntities(text, enabledTypes = {}, customRules = []) {
             start: match.index,
             end: match.index + value.length,
             normalized: normalizeEntity(ENTITY_TYPES.CREDIT_CARD, value),
+            unverified: false,
           });
         }
       } else {
         // Track candidate as failed Luhn if it looks like a card (e.g. 13-19 digits)
         luhnFailedCount++;
+        if (!strict && isEnabled(ENTITY_TYPES.CREDIT_CARD)) {
+          rawCandidates.push({
+            type: ENTITY_TYPES.CREDIT_CARD,
+            value,
+            start: match.index,
+            end: match.index + value.length,
+            normalized: normalizeEntity(ENTITY_TYPES.CREDIT_CARD, value),
+            unverified: true,
+          });
+        }
       }
     }
   }
 
   // 2. AADHAAR NUMBERS (12 digits, first digit 2-9, validated with Verhoeff)
-  if (isEnabled(ENTITY_TYPES.AADHAAR)) {
-    const aadhaarMatches = text.matchAll(AADHAAR_CANDIDATE_REGEX);
-    for (const match of aadhaarMatches) {
-      const value = match[0];
-      if (validateVerhoeff(value)) {
+  const aadhaarMatches = text.matchAll(AADHAAR_CANDIDATE_REGEX);
+  for (const match of aadhaarMatches) {
+    const value = match[0];
+    if (validateVerhoeff(value)) {
+      if (isEnabled(ENTITY_TYPES.AADHAAR)) {
         rawCandidates.push({
           type: ENTITY_TYPES.AADHAAR,
           value,
           start: match.index,
           end: match.index + value.length,
           normalized: normalizeEntity(ENTITY_TYPES.AADHAAR, value),
+          unverified: false,
         });
-      } else {
-        verhoeffFailedCount++;
+      }
+    } else {
+      verhoeffFailedCount++;
+      if (!strict && isEnabled(ENTITY_TYPES.AADHAAR)) {
+        rawCandidates.push({
+          type: ENTITY_TYPES.AADHAAR,
+          value,
+          start: match.index,
+          end: match.index + value.length,
+          normalized: normalizeEntity(ENTITY_TYPES.AADHAAR, value),
+          unverified: true,
+        });
       }
     }
   }

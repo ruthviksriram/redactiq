@@ -36,17 +36,10 @@ export default function App() {
     try {
       const saved = localStorage.getItem('redactiq-theme');
       if (saved === 'dark' || saved === 'light') return saved;
-      if (
-        typeof window !== 'undefined' &&
-        window.matchMedia &&
-        window.matchMedia('(prefers-color-scheme: light)').matches
-      ) {
-        return 'light';
-      }
     } catch {
       // Fallback if storage access is blocked
     }
-    return 'dark';
+    return 'light';
   });
 
   const [rawText, setRawText] = useState('');
@@ -56,6 +49,7 @@ export default function App() {
   const [typeModes, setTypeModes] = useState(DEFAULT_CUSTOM_TYPE_MODES);
   const [overrides, setOverrides] = useState({});
   const [customRules, setCustomRules] = useState([]);
+  const [strictChecksum, setStrictChecksum] = useState(true);
   const [enabledTypes, setEnabledTypes] = useState({
     [ENTITY_TYPES.EMAIL]: true,
     [ENTITY_TYPES.PHONE]: true,
@@ -152,8 +146,8 @@ export default function App() {
     if (!debouncedText) {
       return { matches: [], luhnFailedCount: 0, verhoeffFailedCount: 0 };
     }
-    return detectEntities(debouncedText, enabledTypes, customRules);
-  }, [debouncedText, enabledTypes, customRules]);
+    return detectEntities(debouncedText, enabledTypes, customRules, { strict: strictChecksum });
+  }, [debouncedText, enabledTypes, customRules, strictChecksum]);
 
   // Pure memoized redaction transformation
   const redactionResult = useMemo(() => {
@@ -174,8 +168,19 @@ export default function App() {
 
   // Auto-generated plain English risk summary
   const riskSummary = useMemo(() => {
-    return generateRiskSummary(detectionResult.matches, riskScore, mode);
-  }, [detectionResult.matches, riskScore, mode]);
+    return generateRiskSummary(detectionResult.matches, riskScore, mode, {
+      luhnFailedCount: detectionResult.luhnFailedCount || 0,
+      verhoeffFailedCount: detectionResult.verhoeffFailedCount || 0,
+      strict: strictChecksum,
+    });
+  }, [
+    detectionResult.matches,
+    detectionResult.luhnFailedCount,
+    detectionResult.verhoeffFailedCount,
+    riskScore,
+    mode,
+    strictChecksum,
+  ]);
 
   // Regulatory compliance framework mapping (PCI-DSS, DPDP Act 2023, GDPR)
   const complianceTags = useMemo(() => {
@@ -219,16 +224,20 @@ export default function App() {
           onTypeModeChange={handleTypeModeChange}
           enabledTypes={enabledTypes}
           onToggleType={handleToggleType}
+          strictChecksum={strictChecksum}
+          onStrictChecksumChange={setStrictChecksum}
         />
 
         <SummaryBar
           matches={detectionResult.matches}
           luhnFailedCount={detectionResult.luhnFailedCount}
+          verhoeffFailedCount={detectionResult.verhoeffFailedCount || 0}
           enabledTypes={enabledTypes}
           excludedCount={redactionResult.excludedCount || 0}
           riskScore={riskScore}
           riskSummary={riskSummary}
           complianceTags={complianceTags}
+          strictChecksum={strictChecksum}
         />
 
         <AuditView

@@ -5,7 +5,7 @@
 
 [![Vercel Deployment](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](vercel.json)
 [![Cloud Run Ready](https://img.shields.io/badge/Deploy-Google%20Cloud%20Run-blue?logo=googlecloud)](Dockerfile)
-[![Tests Passing](https://img.shields.io/badge/Tests-43%20Passed-brightgreen)](src/lib/__tests__)
+[![Tests Passing](https://img.shields.io/badge/Tests-64%20Passed-brightgreen)](src/lib/__tests__)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 
 ---
@@ -24,8 +24,10 @@ Most commercial scrubbing tools rely on cloud backends or external AI APIs. Send
 
 - **100% Client-Side In-Memory Execution**: Zero backend, zero telemetry, zero analytics, zero external API calls. Enforced at runtime via strict Content Security Policy (`connect-src 'none'`).
 - **Mathematical Algorithmic Validation**:
-  - **Verhoeff Checksum**: Validates 12-digit Indian Aadhaar numbers using the dihedral $D_5$ group algorithm.
-  - **Luhn Algorithm**: Modulo-10 checksum validation on 13–19 digit credit cards. Prevents false-positive flags on random numerical strings.
+  - **Verhoeff Checksum**: Validates 12-digit Indian Aadhaar numbers using the dihedral $D_5$ group algorithm. Failed 12-digit numbers are tracked as Verhoeff failures.
+  - **Luhn Algorithm**: Modulo-10 checksum validation on 13–19 digit credit cards. Prevents false-positive flags on random numerical sequences.
+  - **Checksum-Failed Notification**: Detailed summary reporting: `"Checksum-failed numbers ignored: N cards (Luhn), M Aadhaar-like (Verhoeff)"`.
+  - **Strict Checksum Validation Toggle**: On by default for maximum precision. When toggled off, numbers matching card or Aadhaar formatting that fail algorithmic checksums are also detected and redacted, explicitly flagged with an `(unverified)` label for maximum caution.
   - **Octet-Bounded IP Validation**: Strict $0–255$ boundary checks rejecting invalid IPs (e.g., `999.1.1.1`).
 - **Four Flexible Redaction Modes**:
   1. **Full Mask**: High-security token substitution (`[REDACTED_EMAIL]`, `[REDACTED_CARD]`).
@@ -33,17 +35,18 @@ Most commercial scrubbing tools rely on cloud backends or external AI APIs. Send
   3. **Consistent Pseudonymization**: Maps identical normalized entities to deterministic placeholders (`EMAIL_01`, `PHONE_01`) across the document. Guaranteed comma-free to preserve CSV structure.
   4. **Custom Mode**: Granular per-entity type strategy configuration (e.g. Email = Partial, Aadhaar = Partial, others = Full Mask).
 - **Interactive Per-Item Overrides**: Click or activate any detected entity span in the Original panel to open an accessible popover and override its redaction behavior (`Full Mask`, `Partial Mask`, `Pseudonym`, or `Don't redact`). Overrides apply to the entity's normalized value so all occurrences stay synchronized, with an `• edited` indicator and a 1-click `Reset all overrides` action.
-- **Privacy Risk Exposure Meter & Guidance**: Real-time 0–100 sensitivity scoring (`Low`, `Medium`, `High`, `Critical`) using mathematical sensitivity weights (Payment Cards & Aadhaar high, PAN & Phone medium, Email medium-low, IP low). Accompanied by auto-generated non-AI strategic recommendations and full responsiveness to entity toggles and exclusions.
+- **Privacy Risk Exposure Meter & Cautious Guidance**: Real-time 0–100 sensitivity scoring (`Low`, `Medium`, `High`, `Critical`) using mathematical sensitivity weights (Payment Cards & Aadhaar high, PAN & Phone medium, Email medium-low, IP low). Strictly adheres to privacy-first guidance wording (never says "Safe to transmit", advises review when no PII is detected, and flags unverified candidate IDs).
 - **Regulatory Compliance Framework Flags**: Automatic live detection of applicable regulatory domains: **PCI-DSS v4.0** (Cardholder data), **India DPDP Act 2023** (Digital personal identification), and **EU GDPR Art. 4** (Personal contact & IP telemetry).
 - **User-Defined Custom Detection Rules**: Add custom proprietary terms, codenames, or regular expressions directly from the UI. Detected as custom entity chips with full redaction mode support and resilient regex error boundaries that never crash.
-- **Zero-PII JSON Compliance Audit Report**: 1-click export of structured security reports containing environment assertions, timestamps, exact entity counts, risk scores, and regulatory flags with a mathematical guarantee of zero unmasked PII.
+- **Zero-PII JSON Compliance Audit Report**: 1-click export of structured security reports containing environment assertions, timestamps, exact entity counts, risk scores, Luhn/Verhoeff failure tallies, and regulatory flags with a mathematical guarantee of zero unmasked PII.
 - **Side-by-Side Audit View**: Real-time comparison between original source text and sanitized output with color-coded entity tags. Implemented using React element tokens with **zero `dangerouslySetInnerHTML`** to prevent XSS.
 - **Ephemeral Pseudonymization Mapping Table**: Reverse-lookup table visible only in pseudonymization mode. Stored strictly in volatile RAM and automatically excluded from exports.
 - **Safe 1-Click Export**:
   - **Download Sanitized File**: Downloads clean output preserving original file format (`.txt` or `.csv`) and naming (`sanitized_<originalname>`). Contains pure redacted text without UI badges or label text.
   - **Copy to Clipboard**: Instant copy of pure sanitized text with visual confirmation.
+  - **Download Audit Report (JSON)**: Secondary 3D button matching the export toolbar style.
 - **Tactile Vercel/Stripe-Tier UI**:
-  - Dual themes: Deep Navy (`#050B18`) and Clean Light (`#F5F9FC`).
+  - Dual themes: Clean Light (`#F5F9FC`, default on first visit) and Deep Navy (`#050B18`), with persistent user preference in `localStorage`.
   - Interactive 3D card perspective tilt with dynamic specular glare.
   - Custom fluid trailing cursor with fine-pointer detection.
   - Tactile 3D buttons with mouse-follow radial glow.
@@ -128,7 +131,7 @@ RedactIQ is built on the principle that the most secure data transfer is **no da
 - **Framework**: React 18
 - **Build Tool**: Vite 6
 - **Styling**: Plain CSS with CSS Custom Properties (zero CSS framework dependencies)
-- **Unit Testing**: Vitest (43 automated tests covering math, regex, overlap resolution, and export sanitation)
+- **Unit Testing**: Vitest (64 automated tests covering math, regex, overlap resolution, strict/unverified modes, risk scoring, compliance flags, and export sanitation)
 - **Linting**: ESLint with `react/recommended` and `react-hooks` rules
 
 ---
@@ -155,7 +158,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ### Running Tests and Linting
 ```bash
-# Run all 43 Vitest unit tests
+# Run all 64 Vitest unit tests
 npm test
 
 # Run ESLint validation

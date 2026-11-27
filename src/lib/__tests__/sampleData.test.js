@@ -28,8 +28,10 @@ describe('sampleData.js Integration Test', () => {
     expect(countsByType[ENTITY_TYPES.AADHAAR]).toBe(SAMPLE_EXPECTED_COUNTS.AADHAAR);
     expect(countsByType[ENTITY_TYPES.CREDIT_CARD]).toBe(SAMPLE_EXPECTED_COUNTS.CREDIT_CARD);
 
-    // Verify Luhn failure count
+    // Verify Luhn and Verhoeff failure counts
     expect(luhnFailedCount).toBe(SAMPLE_EXPECTED_COUNTS.LUHN_FAILED);
+    const { verhoeffFailedCount } = detectEntities(SAMPLE_TEXT);
+    expect(verhoeffFailedCount).toBe(SAMPLE_EXPECTED_COUNTS.VERHOEFF_FAILED);
 
     // Verify invalid elements in sampleData were NOT detected:
     const values = matches.map((m) => m.value);

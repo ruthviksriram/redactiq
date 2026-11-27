@@ -72,17 +72,32 @@ export function calculateRiskScore(matches = [], overrides = {}, enabledTypes = 
  *
  * @param {Array<{ type: string }>} matches
  * @param {{ score: number, level: string, activeCount: number }} scoreResult
- * @param {string} mode
+ * @param {string} [mode=REDACTION_MODES.FULL]
+ * @param {{ luhnFailedCount?: number, verhoeffFailedCount?: number, strict?: boolean }} [validationStats={}]
  * @returns {{ title: string, details: string, recommendation: string }}
  */
-export function generateRiskSummary(matches = [], scoreResult, mode = REDACTION_MODES.FULL) {
+export function generateRiskSummary(
+  matches = [],
+  scoreResult,
+  mode = REDACTION_MODES.FULL,
+  validationStats = {}
+) {
   const { score, level, activeCount } = scoreResult;
+  const luhnFailed = validationStats.luhnFailedCount || 0;
+  const verhoeffFailed = validationStats.verhoeffFailedCount || 0;
+  const checksumFailedTotal = luhnFailed + verhoeffFailed;
+  const isStrict = validationStats.strict !== false;
+
+  const checksumNotice =
+    isStrict && checksumFailedTotal > 0
+      ? ` ${checksumFailedTotal} number(s) look like IDs but failed validation — review them or turn off strict validation.`
+      : '';
 
   if (activeCount === 0) {
     return {
-      title: 'Safe / Zero Risk Exposure',
-      details: 'No active personal data detected or all detected items are excluded from redaction.',
-      recommendation: 'Safe to transmit or share without masking.',
+      title: 'Low Risk Exposure (0/100)',
+      details: 'No personal data detected by the active rules or all items are excluded.',
+      recommendation: `No PII detected by the active rules. Review the text before sharing.${checksumNotice}`,
     };
   }
 
@@ -111,7 +126,7 @@ export function generateRiskSummary(matches = [], scoreResult, mode = REDACTION_
   return {
     title: `${level} Risk Exposure (${score}/100)`,
     details: `Identified ${activeCount} active entities across ${categories.join(', ')}.`,
-    recommendation: `Recommended strategy: ${recommendation}.`,
+    recommendation: `Recommended strategy: ${recommendation}.${checksumNotice}`,
   };
 }
 
@@ -217,6 +232,8 @@ export function generateAuditReport({
       excludedCount,
       luhnValidationFailures: luhnFailedCount,
       verhoeffValidationFailures: verhoeffFailedCount,
+      luhnFailedCount,
+      verhoeffFailedCount,
       countsByType,
     },
     privacyRiskAssessment: {

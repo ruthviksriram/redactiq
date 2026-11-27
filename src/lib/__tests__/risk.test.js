@@ -151,7 +151,7 @@ describe('risk.js and Custom Rules (Part 2)', () => {
         mode: REDACTION_MODES.FULL,
         matches,
         luhnFailedCount: 1,
-        verhoeffFailedCount: 0,
+        verhoeffFailedCount: 2,
         excludedCount: 0,
         riskScore,
         complianceTags,
@@ -162,6 +162,8 @@ describe('risk.js and Custom Rules (Part 2)', () => {
       expect(report.redactionStrategy.mode).toBe(REDACTION_MODES.FULL);
       expect(report.statistics.totalEntitiesDetected).toBe(3);
       expect(report.statistics.luhnValidationFailures).toBe(1);
+      expect(report.statistics.verhoeffValidationFailures).toBe(2);
+      expect(report.statistics.verhoeffFailedCount).toBe(2);
       expect(report.privacyRiskAssessment.score).toBe(riskScore.score);
       expect(report.complianceFrameworks.length).toBeGreaterThan(0);
 
@@ -186,6 +188,31 @@ describe('risk.js and Custom Rules (Part 2)', () => {
       expect(summary.title).toContain('Risk Exposure');
       expect(summary.details).toContain('financial records');
       expect(summary.recommendation).toContain('Full Mask');
+      expect(summary.recommendation).not.toContain('Safe to transmit');
+    });
+
+    it('displays cautious wording when no PII is detected and never says "Safe to transmit"', () => {
+      const riskScore = calculateRiskScore([]);
+      const summary = generateRiskSummary([], riskScore, REDACTION_MODES.FULL);
+
+      expect(summary.recommendation).toBe(
+        'No PII detected by the active rules. Review the text before sharing.'
+      );
+      expect(summary.recommendation).not.toContain('Safe to transmit');
+    });
+
+    it('adds notice about checksum-failed numbers when they exist and strict mode is on', () => {
+      const riskScore = calculateRiskScore([]);
+      const summary = generateRiskSummary([], riskScore, REDACTION_MODES.FULL, {
+        luhnFailedCount: 1,
+        verhoeffFailedCount: 2,
+        strict: true,
+      });
+
+      expect(summary.recommendation).toContain(
+        '3 number(s) look like IDs but failed validation — review them or turn off strict validation.'
+      );
+      expect(summary.recommendation).not.toContain('Safe to transmit');
     });
   });
 });

@@ -61,12 +61,13 @@ describe('detectors.js', () => {
       expect(res.matches[0].value).toBe('AAAPL1234C');
     });
 
-    it('detects valid Aadhaar and ignores Verhoeff failures', () => {
+    it('detects valid Aadhaar and tracks Verhoeff failures', () => {
       const text = 'Valid UID: 2345 6789 0124. Corrupted: 2345 6789 0125.';
       const res = detectEntities(text);
       expect(res.matches).toHaveLength(1);
       expect(res.matches[0].type).toBe(ENTITY_TYPES.AADHAAR);
       expect(res.matches[0].value).toBe('2345 6789 0124');
+      expect(res.verhoeffFailedCount).toBe(1);
     });
 
     it('detects Luhn-passing cards and tracks Luhn failures', () => {
@@ -76,6 +77,28 @@ describe('detectors.js', () => {
       expect(res.matches[0].type).toBe(ENTITY_TYPES.CREDIT_CARD);
       expect(res.matches[0].value).toBe('4111 1111 1111 1111');
       expect(res.luhnFailedCount).toBe(1);
+    });
+
+    it('redacts unverified cards and Aadhaar when strict mode is turned off', () => {
+      const text = 'Luhn-fail card 1234 5678 9012 3456 and Verhoeff-fail Aadhaar 2345 6789 0125.';
+      // Strict on (default)
+      const strictRes = detectEntities(text, {}, [], { strict: true });
+      expect(strictRes.matches).toHaveLength(0);
+      expect(strictRes.luhnFailedCount).toBe(1);
+      expect(strictRes.verhoeffFailedCount).toBe(1);
+
+      // Strict off
+      const nonStrictRes = detectEntities(text, {}, [], { strict: false });
+      expect(nonStrictRes.matches).toHaveLength(2);
+      expect(nonStrictRes.luhnFailedCount).toBe(1);
+      expect(nonStrictRes.verhoeffFailedCount).toBe(1);
+
+      const card = nonStrictRes.matches.find((m) => m.type === ENTITY_TYPES.CREDIT_CARD);
+      const aadhaar = nonStrictRes.matches.find((m) => m.type === ENTITY_TYPES.AADHAAR);
+      expect(card).toBeDefined();
+      expect(card.unverified).toBe(true);
+      expect(aadhaar).toBeDefined();
+      expect(aadhaar.unverified).toBe(true);
     });
   });
 

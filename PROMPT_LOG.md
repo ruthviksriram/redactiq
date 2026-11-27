@@ -108,4 +108,13 @@ Phase 1 looks good. Start Phase 2 only: build Header.jsx and InputSection.jsx (t
 ```
 *Note: Starting Phase 2 - implementing Header.jsx, InputSection.jsx, drag-and-drop file upload with validation, 5MB warning, sample loader, 200ms debounce in App.jsx, and browser testing.*
 
+## Prompt 4
+```
+Phase 2 looks good. One fix first: change the footer text "Encrypted only in local RAM · No cloud calls" to "Processed locally in your browser · No network calls", because the data is not actually encrypted.
+
+Then start Phase 3 only: build ControlsBar.jsx (3 redaction modes + entity type toggles), SummaryBar.jsx (count per entity type, total, aria-live, and "Luhn-failed numbers ignored: N"), HighlightedText.jsx and AuditView.jsx (side-by-side original vs sanitized, with type labels on highlights). Wire everything into App.jsx using useMemo. Test all 3 modes and the toggles in the browser with the sample, check that the same email or phone always gets the same placeholder in pseudonymization mode, fix any console errors, run `npm test` and `npm run build`, then commit to main and stop. Show me screenshots of each mode.
+```
+*Note: Starting Phase 3 - updated footer copy, building ControlsBar, SummaryBar, safe HighlightedText, and AuditView side-by-side, wiring into App.jsx with useMemo, and automated multi-mode browser testing with screenshots.*
+
+
 

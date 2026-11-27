@@ -1,11 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header.jsx';
 import InputSection from './components/InputSection.jsx';
+import ControlsBar from './components/ControlsBar.jsx';
+import SummaryBar from './components/SummaryBar.jsx';
+import AuditView from './components/AuditView.jsx';
 import { detectEntities } from './lib/detectors.js';
+import { redactText } from './lib/redact.js';
+import { ENTITY_TYPES, REDACTION_MODES } from './lib/constants.js';
 
 /**
  * Main application coordinator component for RedactIQ.
- * Manages raw input text, 200ms debounce cycle, file metadata, and detection state.
+ * Seamlessly manages raw input, 200ms debounce, entity filters, redaction mode,
+ * detection computation, and live side-by-side audit view.
  *
  * @returns {React.ReactElement} The main App view.
  */
@@ -13,8 +19,17 @@ export default function App() {
   const [rawText, setRawText] = useState('');
   const [debouncedText, setDebouncedText] = useState('');
   const [fileName, setFileName] = useState(null);
+  const [mode, setMode] = useState(REDACTION_MODES.FULL);
+  const [enabledTypes, setEnabledTypes] = useState({
+    [ENTITY_TYPES.EMAIL]: true,
+    [ENTITY_TYPES.PHONE]: true,
+    [ENTITY_TYPES.IP]: true,
+    [ENTITY_TYPES.PAN]: true,
+    [ENTITY_TYPES.AADHAAR]: true,
+    [ENTITY_TYPES.CREDIT_CARD]: true,
+  });
 
-  // 200 ms debounce to prevent UI freezes on rapid keystrokes or large text
+  // Debounce input by 200 ms to preserve high-framerate rendering during typing
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedText(rawText);
@@ -25,13 +40,29 @@ export default function App() {
     };
   }, [rawText]);
 
-  // Run entity detection with useMemo on debounced input
+  // Toggle individual entity types
+  const handleToggleType = (type) => {
+    setEnabledTypes((prev) => ({
+      ...prev,
+      [type]: !prev[type],
+    }));
+  };
+
+  // Pure memoized entity detection
   const detectionResult = useMemo(() => {
     if (!debouncedText) {
       return { matches: [], luhnFailedCount: 0 };
     }
-    return detectEntities(debouncedText);
-  }, [debouncedText]);
+    return detectEntities(debouncedText, enabledTypes);
+  }, [debouncedText, enabledTypes]);
+
+  // Pure memoized redaction transformation
+  const redactionResult = useMemo(() => {
+    if (!debouncedText) {
+      return { sanitizedText: '', replacements: [], mapping: [] };
+    }
+    return redactText(debouncedText, detectionResult.matches, mode);
+  }, [debouncedText, detectionResult.matches, mode]);
 
   return (
     <div className="app-shell">
@@ -44,23 +75,26 @@ export default function App() {
           onFileNameChange={setFileName}
         />
 
-        {/* Phase 2 preview status */}
-        <div className="phase-status-card" role="region" aria-label="Detection Engine Status">
-          <div className="status-header">
-            <span className="status-indicator"></span>
-            <span className="status-title">Detection Engine Live</span>
-            {debouncedText && (
-              <span className="status-badge">
-                {detectionResult.matches.length} entities detected · {detectionResult.luhnFailedCount} Luhn-failed numbers filtered
-              </span>
-            )}
-          </div>
-          <p className="status-description">
-            {debouncedText
-              ? `Client-side detector parsed ${debouncedText.length.toLocaleString()} characters in memory without network transmission.`
-              : 'Paste text or load sample above to detect and classify PII.'}
-          </p>
-        </div>
+        <ControlsBar
+          mode={mode}
+          onModeChange={setMode}
+          enabledTypes={enabledTypes}
+          onToggleType={handleToggleType}
+        />
+
+        <SummaryBar
+          matches={detectionResult.matches}
+          luhnFailedCount={detectionResult.luhnFailedCount}
+          enabledTypes={enabledTypes}
+        />
+
+        <AuditView
+          originalText={debouncedText}
+          matches={detectionResult.matches}
+          sanitizedText={redactionResult.sanitizedText}
+          replacements={redactionResult.replacements}
+          mode={mode}
+        />
       </main>
     </div>
   );

@@ -180,6 +180,13 @@ Test in the browser, run `npm test`, `npm run lint` and `npm run build`, make su
 ```
 *Note: Starting second visual redesign pass - implementing CustomCursor.jsx with requestAnimationFrame easing, 3D card tilt with specular glare, button mouse-follow glow, animated aurora header glow, and staggered section entrance animations.*
 
+## Prompt 7
+```
+Accent gradient: #F97316 -> #F43F5E (orange to rose) in dark mode, #EA580C -> #E11D48 in light mode. Background dark #0A0705 (warm near-black), light #FFF9F5. Change the IP entity highlight colour from orange to teal (#2DD4BF) so it does not clash with the accent. Keep the "100% Client-Side" badge mint green.
+```
+*Note: Updated color palette: warm near-black background (#0A0705), warm off-white (#FFF9F5), orange-to-rose accent gradients, and changed IP highlight to high-contrast teal (#2DD4BF).*
+
+
 
 
 
